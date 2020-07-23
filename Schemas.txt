@@ -1,0 +1,31 @@
+Create Table User_Accounts (
+    emailid VarChar(120) NOT NULL,
+    passwd VarChar(120) NOT NULL,
+    type_of_acc VarChar(30) NOT NULL,
+    Primary Key(emailid)
+);
+
+Create Table Driver_Info (
+    emailid VarChar(120) NOT NULL,
+    fname VarChar(120),
+    lname VarChar(120),
+    license_num INT,
+    Primary Key(emailid),
+    Foreign Key (emailid) References User_Accounts(emailid) On Delete Cascade
+);
+
+Create Table Ind_Info (
+    emailid VarChar(120) NOT NULL,
+    fname VarChar(120),
+    lname VarChar(120),
+    ind_name VarChar(120),
+    Primary Key(emailid),
+    Foreign Key (emailid) References User_Accounts(emailid) On Delete Cascade
+);
+
+Create Table active_sessions (
+    session_id VarChar(128) NOT NULL,
+    emailid VarChar(120) NOT NULL,
+    valid_till DATETIME NOT NULL
+    Primary Key (session_id)
+)

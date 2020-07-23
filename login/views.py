@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from cs411_project import database
 
 
 def login_page(request):
@@ -7,13 +8,16 @@ def login_page(request):
 
 def register(request):
     if request.method == "GET":
-        for elem in request.args:
-            if request.args[elem] == "":
+
+        args = get_register_args(request)
+
+        for elem in args.keys():
+            if args[elem] == "":
                 return render(request, "sign_up.html", {"invalid_login": 1})
-        if True: # if mongo_client.add_account(request.args):
+        if database.add_user_account(args):
             return render(request, "index.html")
 
-    return render(request, "sign_up.html", acc_exists=1)
+    return render(request, "sign_up.html", {"acc_exists": 1})
 
 # ADD DATABASE INTEGRATION
 def signin(request):
@@ -21,26 +25,23 @@ def signin(request):
         return render(request, "sign_up.html", {"invalid_login": 1})
 
     else:
-        print(request.GET)
-        # if len(request.args) == 0:
-        #     return render(request, "sign_up.html", {"invalid_login": 1})
-
-        for elem in request.GET:
-            if request.GET[elem] == "":
+        args = get_register_args(request)
+        for elem in args.keys():
+            if args[elem] == "":
                 return render(request, "sign_up.html", {"invalid_login": 1})
 
-    invalid_login, unverified_login = 0, 0 # mongo_client.get_account(request.args)
+        valid_login = database.check_user_account(args)
 
-    if invalid_login:
-        return render(request, "sign_up.html", {"invalid_login": 1})
-    elif unverified_login:
-        mongo_client.resend_conf_email(request.args["emailid"])
-        return render(request, "sign_up.html", {"unverified_login": 1})
+        if not valid_login:
+            return render(request, "sign_up.html", {"invalid_login": 1})
+        # elif unverified_login:
+        #     mongo_client.resend_conf_email(request.args["emailid"])
+        #     return render(request, "sign_up.html", {"unverified_login": 1})
 
-    # VALID LOGIN
-    # session = mongo_client.add_active_session(request.args)
+        # VALID LOGIN
+        # session = mongo_client.add_active_session(request.args)
 
-    return render(request, "index.html")
+        return render(request, "index.html")
 
 
 # ADD DATABASE INTEGRATION
@@ -55,3 +56,10 @@ def confirm_account(request, token_emailid):
         # mongo_client.verify_account(emailid, token)
 
     return render(request, "index.html")
+
+
+def get_register_args(request):
+    args = dict(request.GET)
+    for key in args.keys():
+        args[key] = args[key][0]
+    return args
