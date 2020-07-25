@@ -85,7 +85,7 @@ def check_user_account(data): # Used for login
 
         # User Account already present
         if row == None:
-            return False
+            return False, None
 
         return True, row
 
@@ -133,7 +133,7 @@ def update_driver_info(data):
 
         if DEBUG:
             print(cmd)
-            
+
         cursor.execute(cmd)
 
 def print_driver_info(data):

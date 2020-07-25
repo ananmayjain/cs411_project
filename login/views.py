@@ -1,11 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from cs411_project import database
-
+from django.views.decorators.csrf import csrf_exempt
 
 def login_page(request):
     return render(request, 'sign_up.html')
 
+@csrf_exempt
 def register(request):
     if request.method == "GET":
 
@@ -20,17 +21,20 @@ def register(request):
     return render(request, "sign_up.html", {"acc_exists": 1})
 
 # ADD DATABASE INTEGRATION
+@csrf_exempt
 def signin(request):
-    if request.method == "POST":
+    if request.method == "GET":
         return render(request, "sign_up.html", {"invalid_login": 1})
 
     else:
         args = get_register_args(request)
+        print(args)
+
         for elem in args.keys():
             if args[elem] == "":
                 return render(request, "sign_up.html", {"invalid_login": 1})
 
-        valid_login = database.check_user_account(args)
+        valid_login, data = database.check_user_account(args)
 
         if not valid_login:
             return render(request, "sign_up.html", {"invalid_login": 1})
@@ -41,7 +45,16 @@ def signin(request):
         # VALID LOGIN
         # session = mongo_client.add_active_session(request.args)
 
-        return render(request, "index.html")
+        user_data = make_user_acc_dict(data)
+
+        if user_data["type_of_acc"] == "driver":
+            return redirect("/home/driverhome")
+        elif user_data["type_of_acc"] == "industry":
+            return redirect("/home/industryhome")
+        else:
+            print("ERROR SANITY CHECK type_of_acc")
+
+        return redirect("/")
 
 
 # ADD DATABASE INTEGRATION
@@ -59,7 +72,22 @@ def confirm_account(request, token_emailid):
 
 
 def get_register_args(request):
-    args = dict(request.GET)
-    for key in args.keys():
-        args[key] = args[key][0]
-    return args
+
+    if request.method == "GET":
+        args = dict(request.GET)
+        for key in args.keys():
+            args[key] = args[key][0]
+        return args
+    else:
+        args = dict(request.POST)
+        for key in args.keys():
+            args[key] = args[key][0]
+        return args
+
+def make_user_acc_dict(data):
+    d = {}
+    d["emailid"] = data[0]
+    d["passwd"] = data[1]
+    d["type_of_acc"] = data[2]
+
+    return d
