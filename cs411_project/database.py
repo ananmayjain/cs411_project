@@ -70,6 +70,7 @@ def delete_user_account(data):
         row = cursor.fetchone()
         # User not present in database, SANITY CHECK
         if row == None:
+            print("Sanity CHECK user not present in delete data")
             return False
 
         cursor.execute("Delete from User_Accounts where emailid = %s", [data["emailid"]])

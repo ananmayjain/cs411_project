@@ -48,6 +48,14 @@ alert("Invalid Data, Please Try Again")
 </script>
 {% endif %}
 
+<script>
+	function cancel_update() {
+		if(confirm("Are you sure you want to Cancel the Changes?")){
+			window.location.replace("driverhome");
+		}
+	}
+</script>
+
 </head>
 <body>
 <form class="jotform-form" action="/home/moddriverdetails" method="post" autocomplete="on" novalidate="true">
@@ -140,6 +148,9 @@ alert("Invalid Data, Please Try Again")
 					<div data-align="left" class="form-buttons-wrapper form-buttons-center jsTest-button-wrapperField">
 						<button id="input_2" type="submit" class="form-submit-button submit-button jf-form-buttons jsTest-submitField" data-component="button" data-content="">
 							Submit
+						</button>
+						<button id="input_2" onclick="cancel_update()" class="form-submit-button submit-button jf-form-buttons jsTest-submitField" data-component="button" data-content="">
+							Cancel
 						</button>
 					</div>
 				</div>

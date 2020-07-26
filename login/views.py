@@ -12,6 +12,8 @@ def login_page(request):
 
     if "session_timeout" in request.GET:
         return render(request, "sign_up.html", {"session_timeout": 1})
+    elif "account_deleted" in request.GET:
+        return render(request, "sign_up.html", {"account_deleted": 1})
 
     return render(request, 'sign_up.html')
 
@@ -62,7 +64,7 @@ def signin(request):
 
             response = redirect("/home/driverhome")
             response.set_cookie("session_id", value=session_id,
-                expires=expiry_time, domain=domain_name)
+                max_age=(5*60), domain=domain_name)
 
             return response
 

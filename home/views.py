@@ -16,16 +16,17 @@ default_dict = {"emailid": "ananmay3@illinois.edu", "fname": "Ananmay", "lname":
 def driver_home(request):
     cookies = request.COOKIES
 
-    if "session_id" in cookies:
-        expiry_time = datetime.datetime.now() + datetime.timedelta(minutes=1)
-        response = render(request, "driver.html")
-        response.set_cookie("session_id", value=cookies["session_id"],
-            expires=expiry_time, domain=domain_name)
-
-        return response
-
-    else:
+    cookies = request.COOKIES
+    if "session_id" not in cookies:
         return redirect("/?session_timeout=1")
+
+    success, data = database.mod_active_session(cookies["session_id"])
+    if not success:
+        return redirect("/?session_timeout=1")
+
+    response = render(request, "driver.html")
+    set_cookie(response, cookies["session_id"])
+    return response
 
 @csrf_exempt
 def industry_home(request):
@@ -49,6 +50,7 @@ def modify_driver_info(request):
 
     if request.method == "GET":
         response = render(request, "info_form.html", driver_details)
+        set_cookie(response, cookies["session_id"])
         return response
 
     else:
@@ -57,21 +59,56 @@ def modify_driver_info(request):
         for elem in args.keys():
             if args[elem] == "":
                 driver_details["invalid_data"] = 1
-                return render(request, "info_form.html", driver_details)
+                response = render(request, "info_form.html", driver_details)
+                set_cookie(response, cookies["session_id"])
+                return response
 
         args["phone_num"] = get_digits(args["phone_num"])
 
         if len(args["phone_num"]) != 10:
             print("Phone Number not 10 digits")
             driver_details["invalid_data"] = 1
-            return render(request, "info_form.html", driver_details)
+            response = render(request, "info_form.html", driver_details)
+            set_cookie(response, cookies["session_id"])
+            return response
 
         if database.update_driver_info(args):
             response = redirect("/home/driverhome?update_successful=1")
+            set_cookie(response, cookies["session_id"])
             return response
         else:
             response = redirect("/home/driverhome?update_failed=1")
+            set_cookie(response, cookies["session_id"])
             return response
+
+@csrf_exempt
+def delete_account(request):
+    cookies = request.COOKIES
+    if "session_id" not in cookies:
+        return redirect("/?session_timeout=1")
+
+    success, data = database.mod_active_session(cookies["session_id"])
+
+    if not success:
+        print("Something Weird Happened")
+        return redirect("/?session_timeout=1")
+    user_data = make_user_session_dict(data)
+
+    database.delete_user_account(user_data)
+
+    response = redirect("/?account_deleted=1")
+    response.delete_cookie("session_id")
+    return response
+
+@csrf_exempt
+def sign_out(request):
+    cookies = request.COOKIES
+    if "session_id" not in cookies:
+        return redirect("/?session_timeout=1")
+
+    response = redirect("/?sign_out=1")
+    response.delete_cookie("session_id")
+    return response
 
 def get_args(request):
 
@@ -111,3 +148,6 @@ def get_digits(phone_num):
             number += phone_num[i]
 
     return number
+
+def set_cookie(response, cookie_value):
+    response.set_cookie("session_id", value=cookie_value, max_age= (5*60), domain=domain_name)

@@ -14,13 +14,19 @@
 
       {% if register_success %}
         <script>
-        alert("Registration Successful /n Please Login Now")
+        alert("Registration Successful, Please Login Now")
         </script>
       {% endif %}
 
       {% if session_timeout %}
         <script>
         alert("Session Timed Out, Please Login Again")
+        </script>
+      {% endif %}
+
+      {% if account_deleted %}
+        <script>
+        alert("Account Successfully Deleted")
         </script>
       {% endif %}
 

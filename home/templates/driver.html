@@ -18,6 +18,20 @@
     </script>
     {% endif %}
 
+    <script>
+    function delete_account() {
+      if (confirm("Are you sure you want to delete your account?")) {
+        window.location.replace("delete_account");
+      }
+    }
+
+    function sign_out() {
+      if (confirm("Are you sure you want to Sign Out?")) {
+        window.location.replace("sign_out");
+      }
+    }
+    </script>
+
     <link rel="stylesheet"  href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" />
     <link rel="stylesheet" href="/static/css/all.min.css" />
     <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
@@ -64,7 +78,11 @@
                   </li>
                   <li class="nav-item">
                     <div class="tm-nav-link-highlight"></div>
-                    <a class="nav-link" href="contact.html">Contact</a>
+                    <a class="nav-link" onclick="sign_out()">Sign Out</a>
+                  </li>
+                  <li class="nav-item">
+                    <div class="tm-nav-link-highlight"></div>
+                    <a class="nav-link" onclick="delete_account()">Delete Account</a>
                   </li>
                 </ul>
               </div>
