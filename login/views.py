@@ -17,7 +17,7 @@ def login_page(request):
 
 @csrf_exempt
 def register(request):
-    if request.method == "GET":
+    if request.method == "POST":
 
         args = get_register_args(request)
 
@@ -25,6 +25,8 @@ def register(request):
             if args[elem] == "":
                 return render(request, "sign_up.html", {"invalid_login": 1})
         if database.add_user_account(args):
+            driver_details = make_driver_info_dict([args["emailid"], "", "", "", ""])
+            database.add_driver_info(driver_details)
             return render(request, "sign_up.html", {"register_success": 1})
 
     return render(request, "sign_up.html", {"acc_exists": 1})
@@ -104,5 +106,15 @@ def make_user_acc_dict(data):
     d["emailid"] = data[0]
     d["passwd"] = data[1]
     d["type_of_acc"] = data[2]
+
+    return d
+
+def make_driver_info_dict(data):
+    d = {}
+    d["emailid"] = data[0]
+    d["fname"] = data[1]
+    d["lname"] = data[2]
+    d["phone_num"] = data[3]
+    d["license_num"] = data[4]
 
     return d

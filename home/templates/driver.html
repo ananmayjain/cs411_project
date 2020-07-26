@@ -6,9 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>RideShare</title>
 
-    {% if set_cookie %}
+    {% if update_successful %}
     <script>
-      setCookie("session_id", {{session_id}}, 1);
+      alert("Your Information has been Updated Successfully")
+    </script>
+    {% endif %}
+
+    {% if update_failed %}
+    <script>
+      alert("Your Information Update Failed, Please Try Again")
     </script>
     {% endif %}
 

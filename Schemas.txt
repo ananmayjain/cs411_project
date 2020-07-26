@@ -9,7 +9,8 @@ Create Table Driver_Info (
     emailid VarChar(120) NOT NULL,
     fname VarChar(120),
     lname VarChar(120),
-    license_num INT,
+    phone_num VarChar(10),
+    license_num VarChar(30),
     Primary Key(emailid),
     Foreign Key (emailid) References User_Accounts(emailid) On Delete Cascade
 );

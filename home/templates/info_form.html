@@ -41,6 +41,13 @@ if (window.JotForm && JotForm.accessible) $('input_12').setAttribute('tabindex',
    setTimeout(function() {
 JotForm.paymentExtrasOnTheFly([null,{"name":"clickTo","qid":"1","text":"Driver Details:","type":"control_head"},{"name":"submit","qid":"2","text":"Submit","type":"control_button"},{"name":"fullName3","qid":"3","text":"Full Name","type":"control_fullname"},{"name":"address4","qid":"4","text":"Address","type":"control_address"},{"name":"phoneNumber5","qid":"5","text":"Phone Number","type":"control_phone"},{"name":"email6","qid":"6","subLabel":"example@example.com","text":"E-mail","type":"control_email"},{"name":"clickTo7","qid":"7","text":"","type":"control_text"},{"name":"howDid8","qid":"8","text":"How did you hear about us?","type":"control_dropdown"},{"name":"other","qid":"9","text":"Other","type":"control_textbox"},null,{"name":"feedbackAbout11","qid":"11","text":"Feedback about us:","type":"control_textarea"},{"name":"suggestionsIf","qid":"12","text":"Suggestions if any for further improvement:","type":"control_textarea"},{"name":"willYou","qid":"13","text":"Will you be willing to recommend us?","type":"control_checkbox"},{"name":"pleaseGive14","qid":"14","text":"Please give reference of any two people whom you feel:","type":"control_matrix"}]);}, 20);
 </script>
+
+{% if invalid_data %}
+<script>
+alert("Invalid Data, Please Try Again")
+</script>
+{% endif %}
+
 </head>
 <body>
 <form class="jotform-form" action="/home/moddriverdetails" method="post" autocomplete="on" novalidate="true">
@@ -68,11 +75,23 @@ JotForm.paymentExtrasOnTheFly([null,{"name":"clickTo","qid":"1","text":"Driver D
         <div id="cid_3" class="form-input-wide jf-required" data-layout="full">
           <div data-wrapper-react="true">
             <span class="form-sub-label-container " style="vertical-align:top" data-input-type="first">
+
+						{% if fname %}
               <input type="text" id="first_3" name="fname" value={{fname}} class="form-textbox validate[required]" size="10" data-component="first" aria-labelledby="label_3 sublabel_3_first" required="">
+						{% elif 1 %}
+							<input type="text" id="first_3" name="fname" value="" class="form-textbox validate[required]" size="10" data-component="first" aria-labelledby="label_3 sublabel_3_first" required="">
+						{% endif %}
+
               <label class="form-sub-label" for="first_3" id="sublabel_3_first" style="min-height:13px" aria-hidden="false"> First Name </label>
             </span>
             <span class="form-sub-label-container " style="vertical-align:top" data-input-type="last">
+
+						{% if lname %}
               <input type="text" id="last_3" name="lname" value={{lname}} class="form-textbox validate[required]" size="15" data-component="last" aria-labelledby="label_3 sublabel_3_last" required="">
+						{% elif 1 %}
+							<input type="text" id="last_3" name="lname" value="" class="form-textbox validate[required]" size="15" data-component="last" aria-labelledby="label_3 sublabel_3_last" required="">
+						{% endif %}
+
               <label class="form-sub-label" for="last_3" id="sublabel_3_last" style="min-height:13px" aria-hidden="false"> Last Name </label>
             </span>
           </div>
@@ -104,7 +123,13 @@ JotForm.paymentExtrasOnTheFly([null,{"name":"clickTo","qid":"1","text":"Driver D
 				<div id="cid_3" class="form-input-wide jf-required" data-layout="full">
 					<div data-wrapper-react="true">
 						<span class="form-sub-label-container " style="vertical-align:top" data-input-type="first">
-							<input type="text" id="first_3" name="license_num" value={{license_num}} class="form-textbox validate[required]" size="10" data-component="first" aria-labelledby="label_3 sublabel_3_first" required="">
+
+						{% if license_num %}
+              <input type="text" id="first_3" name="license_num" value={{license_num}} class="form-textbox validate[required]" size="10" data-component="first" aria-labelledby="label_3 sublabel_3_first" required="">
+						{% elif 1 %}
+							<input type="text" id="first_3" name="license_num" value="" class="form-textbox validate[required]" size="10" data-component="first" aria-labelledby="label_3 sublabel_3_first" required="">
+						{% endif %}
+
 						</span>
 					</div>
 				</div>

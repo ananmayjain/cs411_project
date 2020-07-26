@@ -37,10 +37,12 @@ insert_user_acc = "Insert Into User_Accounts values (%s, %s, %s, %s, %s, %d, %d)
 from django.db import connection
 import hashlib
 import datetime
+import threading
 
 DEBUG = 1
 
 session_counter = 0
+session_counter_lock = threading.Lock()
 
 def add_user_account(data):
     with connection.cursor() as cursor:
@@ -114,8 +116,8 @@ def add_driver_info(data):
         if row != None:
             return False
 
-        cursor.execute("Insert Into Driver_Info Values (%s, %s, %s, %s)",
-            [data["emailid"], data["fname"], data["lname"], data["license_num"]]
+        cursor.execute("Insert Into Driver_Info Values (%s, %s, %s, %s, %s)",
+            [data["emailid"], data["fname"], data["lname"], data["phone_num"], data["license_num"]]
         )
 
         return True
@@ -127,18 +129,36 @@ def update_driver_info(data):
         row = cursor.fetchone()
         # Driver acc not present in database, SANITY CHECK
         if row == None:
+            print("Something Weird Happened Sanity Check")
             return False
 
-        cmd = "Update Driver_Info"
+        cmd = "Update Driver_Info set "
         for key in data.keys():
             if key != "emailid":
-                cmd += " set " + str(key) + " = " + str(data[key])
-        cmd += " where emailid = " + str(data["emailid"])
+                cmd += str(key) + " = " + '"' + str(data[key]) + '"' + ","
+        cmd = cmd[0:-1]
+        cmd += " where emailid = " + '"' + str(data["emailid"]) + '"'
 
         if DEBUG:
             print(cmd)
 
         cursor.execute(cmd)
+        return True
+
+def get_driver_info(data):
+    with connection.cursor() as cursor:
+        cursor.execute("Select * from Driver_Info where emailid = %s", [data["emailid"]])
+
+        row = cursor.fetchone()
+        # Driver acc not present in database, SANITY CHECK
+        if row == None:
+            print("SANITY CHECK Driver info not present")
+            cursor.execute("Insert Into Driver_Info Values (%s, %s, %s, %s, %s)",
+                [data["emailid"], "", "", "", ""]
+            )
+            return True, [data["emailid"], "", "", "", ""]
+
+        return True, row
 
 def print_driver_info(data):
     with connection.cursor() as cursor:
@@ -156,8 +176,10 @@ def add_active_session(data):
     global session_counter
 
     while True:
-        session_id = hashlib.sha256(str(session_counter).encode()).hexdigest()
-        session_counter += 1
+
+        with session_counter_lock:
+            session_id = hashlib.sha256(str(session_counter).encode()).hexdigest()
+            session_counter += 1
         with connection.cursor() as cursor:
             # Make sure no other session is active with the same ID
             cursor.execute("Select * from active_sessions where session_id = %s", [session_id])
@@ -166,7 +188,7 @@ def add_active_session(data):
             if row != None:
                 continue
 
-            expiry_time = datetime.datetime.now() + datetime.timedelta(minutes=1)
+            expiry_time = datetime.datetime.now() + datetime.timedelta(minutes=5)
             sql_time = expiry_time.strftime('%Y-%m-%d %H:%M:%S')
 
             cursor.execute("Insert into active_sessions values (%s, %s, %s)",
@@ -175,4 +197,22 @@ def add_active_session(data):
             return session_id, expiry_time
 
 def mod_active_session(session_id):
-    pass
+    global session_counter
+
+    while True:
+
+        with connection.cursor() as cursor:
+            # Make sure no other session is active with the same ID
+            cursor.execute("Select * from active_sessions where session_id = %s", [session_id])
+            row = cursor.fetchone()
+
+            if row == None:
+                return False, None
+
+            expiry_time = datetime.datetime.now() + datetime.timedelta(minutes=5)
+            sql_time = expiry_time.strftime('%Y-%m-%d %H:%M:%S')
+
+            cursor.execute("Update active_sessions set valid_till = %s where session_id = %s",
+            [sql_time, session_id])
+
+            return True, row
