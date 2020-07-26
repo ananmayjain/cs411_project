@@ -35,8 +35,12 @@ Create Table Ind_Info (
 insert_user_acc = "Insert Into User_Accounts values (%s, %s, %s, %s, %s, %d, %d)"
 
 from django.db import connection
+import hashlib
+import datetime
 
 DEBUG = 1
+
+session_counter = 0
 
 def add_user_account(data):
     with connection.cursor() as cursor:
@@ -147,3 +151,28 @@ def print_driver_info(data):
 
         print(row)
         return True
+
+def add_active_session(data):
+    global session_counter
+
+    while True:
+        session_id = hashlib.sha256(str(session_counter).encode()).hexdigest()
+        session_counter += 1
+        with connection.cursor() as cursor:
+            # Make sure no other session is active with the same ID
+            cursor.execute("Select * from active_sessions where session_id = %s", [session_id])
+            row = cursor.fetchone()
+
+            if row != None:
+                continue
+
+            expiry_time = datetime.datetime.now() + datetime.timedelta(minutes=1)
+            sql_time = expiry_time.strftime('%Y-%m-%d %H:%M:%S')
+
+            cursor.execute("Insert into active_sessions values (%s, %s, %s)",
+            [session_id, data["emailid"], sql_time])
+
+            return session_id, expiry_time
+
+def mod_active_session(session_id):
+    pass

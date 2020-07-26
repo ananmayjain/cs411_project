@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>RideShare</title>
-<!--
-Next Level CSS Template
-https://templatemo.com/tm-532-next-level
--->
+
+    {% if set_cookie %}
+    <script>
+      setCookie("session_id", {{session_id}}, 1);
+    </script>
+    {% endif %}
+
     <link rel="stylesheet"  href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" />
     <link rel="stylesheet" href="/static/css/all.min.css" />
     <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
@@ -47,11 +50,11 @@ https://templatemo.com/tm-532-next-level
                   </li>
                   <li class="nav-item">
                     <div class="tm-nav-link-highlight"></div>
-                    <a class="nav-link" href="about.html">About</a>
+                    <a class="nav-link" href="moddriverdetails">Your Profile</a>
                   </li>
                   <li class="nav-item">
                     <div class="tm-nav-link-highlight"></div>
-                    <a class="nav-link" href="gallery.html">Gallery</a>
+                    <a class="nav-link" href="gallery.html">Set Ride Availability</a>
                   </li>
                   <li class="nav-item">
                     <div class="tm-nav-link-highlight"></div>
@@ -68,15 +71,14 @@ https://templatemo.com/tm-532-next-level
         <div class="col-12 tm-page-cols-container">
           <div class="tm-page-col-left tm-welcome-box tm-bg-primary">
             <p class="tm-welcome-text">
-              <em>"Hello, this is a clean layout. left side is the text and right
-                side is a parallax image."</em>
+              <em>Expand your horizons and find new clients, all here at RideShare</em>
             </p>
           </div>
           <div class="tm-page-col-right">
             <div
               class="tm-welcome-parallax"
               data-parallax="scroll"
-              data-image-src="/static/img/blue-contem-girl.jpg"
+              data-image-src="/static/img/truck.jpg"
             ></div>
           </div>
         </div>
@@ -86,17 +88,10 @@ https://templatemo.com/tm-532-next-level
         <div class="col-12 tm-page-cols-container">
           <div class="tm-page-col-right">
             <h2 class="tm-text-secondary tm-mb-5">
-              Nunc tristique velit ut semper
+              Who We Are
             </h2>
             <p class="tm-mb-6">
-              Homepage main photo is provided by <strong>Moose Photos</strong> from <strong>Pexels</strong>. Next Level CSS Template is brought to you by Template Mo website. You can feel free to adapt it for your websites. No need to put a footer credit link. Please kindly spread a word about us. Thank you. If you have any question, feel free to contact us on Facebook page.
-
-            </p>
-            <p class="mb-0">
-           	  Nullam nec dictum dolor. Sed ultricies purus nec suscipit vulputate. Fusce a massa eu orci
-              vulputate varius. Praesent id felis ac erat elementum condimentum. Pellentesque a
-              libero vitae nisi vestibulum tempor vitae vitae nulla. Praesent ut
-              eleifend ligula, nec pretium erat.
+              RideShare connects freelance truck drivers with industries in the area of their preference. Drivers add their availability including preferences for trip route, and Industries can then hire them on a trip to trip basis.
             </p>
           </div>
         </div>
@@ -108,40 +103,28 @@ https://templatemo.com/tm-532-next-level
             <div
               class="img-fluid tm-mb-4 tm-small-parallax"
               data-parallax="scroll"
-              data-image-src="/static/img/image-1.jpg"></div>
+              data-image-src="/static/img/truck_driver.jpg"></div>
             <div>
               <h3 class="tm-text-secondary tm-mb-4">
-                Quisque at rutrum felis
+                Discover How You Can Grow Today
               </h3>
               <p class="tm-mb-5">
-                Photo by CoWomen from Pexels. Morbi sollicitudin nibh eu
-                dignissim mollis. Etiam turpis tortor, ultricies sit amet
-                placerat suscipit, auctor eu diam.
+                Find Clients on the go with competetive pricing.
               </p>
-              <ul class="tm-list-plus">
-                <li>Vestibulum finibus consectetur nulla</li>
-                <li>Eget imperdiet eros interdum sit amet</li>
-                <li>Sed a lacinia lorem, sed luctus enim</li>
-                <li>2 small images has a parallax effect</li>
-              </ul>
+
             </div>
           </div>
           <div class="col-md-6 tm-home-section-2-right">
             <div
               class="img-fluid tm-mb-4 tm-small-parallax"
               data-parallax="scroll"
-              data-image-src="/static/img/image-2.jpg"></div>
+              data-image-src="/static/img/truck2.jpg"></div>
             <div>
               <h3 class="tm-text-secondary tm-mb-4">
-                Sed ultricies tortor vitae
+                No Commission
               </h3>
               <p class="tm-section-2-text">
-                Photo by <strong>CoWomen</strong> from <strong>Pexels</strong>. Quisque tortor justo, pharetra in
-                eros sed, accumsan dapibus dolor. In luctus sed ante a
-                tristique.
-              </p>
-              <p>
-                You cannot re-distribute our template on your website for download. Ut ornare pulvinar lorem a elementum. Cras sollicitudin ante velit, eget facilisis sem viverra nex. Etiam quis mattis urna.
+                RideShare promises to keep all your trips commission free.
               </p>
             </div>
           </div>

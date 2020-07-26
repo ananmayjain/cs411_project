@@ -2,8 +2,17 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from cs411_project import database
 from django.views.decorators.csrf import csrf_exempt
+import datetime
+import random
+import hashlib
+
+domain_name = "localhost"
 
 def login_page(request):
+
+    if "session_timeout" in request.GET:
+        return render(request, "sign_up.html", {"session_timeout": 1})
+
     return render(request, 'sign_up.html')
 
 @csrf_exempt
@@ -16,7 +25,7 @@ def register(request):
             if args[elem] == "":
                 return render(request, "sign_up.html", {"invalid_login": 1})
         if database.add_user_account(args):
-            return render(request, "index.html")
+            return render(request, "sign_up.html", {"register_success": 1})
 
     return render(request, "sign_up.html", {"acc_exists": 1})
 
@@ -43,12 +52,18 @@ def signin(request):
         #     return render(request, "sign_up.html", {"unverified_login": 1})
 
         # VALID LOGIN
-        # session = mongo_client.add_active_session(request.args)
-
         user_data = make_user_acc_dict(data)
 
+        session_id, expiry_time = database.add_active_session(user_data)
+
         if user_data["type_of_acc"] == "driver":
-            return redirect("/home/driverhome")
+
+            response = redirect("/home/driverhome")
+            response.set_cookie("session_id", value=session_id,
+                expires=expiry_time, domain=domain_name)
+
+            return response
+
         elif user_data["type_of_acc"] == "industry":
             return redirect("/home/industryhome")
         else:
