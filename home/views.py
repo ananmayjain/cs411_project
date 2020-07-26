@@ -14,7 +14,6 @@ default_dict = {"emailid": "ananmay3@illinois.edu", "fname": "Ananmay", "lname":
 
 @csrf_exempt
 def driver_home(request):
-    cookies = request.COOKIES
 
     cookies = request.COOKIES
     if "session_id" not in cookies:
@@ -24,13 +23,13 @@ def driver_home(request):
     if not success:
         return redirect("/?session_timeout=1")
 
-    response = render(request, "driver.html")
+    if "update_successful" in request.GET:
+        response = render(request, "driver.html", {"update_successful": 1})
+    else:
+        response = render(request, "driver.html")
+
     set_cookie(response, cookies["session_id"])
     return response
-
-@csrf_exempt
-def industry_home(request):
-    return render(request, "info_form.html", default_dict)
 
 @csrf_exempt
 def modify_driver_info(request):
@@ -138,6 +137,8 @@ def make_driver_info_dict(data):
     d["lname"] = data[2]
     d["phone_num"] = data[3]
     d["license_num"] = data[4]
+    d["start_loc"] = data[5]
+    d["end_loc"] = data[6]
 
     return d
 
@@ -151,3 +152,80 @@ def get_digits(phone_num):
 
 def set_cookie(response, cookie_value):
     response.set_cookie("session_id", value=cookie_value, max_age= (5*60), domain=domain_name)
+
+@csrf_exempt
+def industry_home(request):
+
+    cookies = request.COOKIES
+    if "session_id" not in cookies:
+        return redirect("/?session_timeout=1")
+
+    success, data = database.mod_active_session(cookies["session_id"])
+    if not success:
+        return redirect("/?session_timeout=1")
+
+    if "update_successful" in request.GET:
+        response = render(request, "industry.html", {"update_successful": 1})
+    else:
+        response = render(request, "industry.html")
+
+    set_cookie(response, cookies["session_id"])
+    return response
+
+@csrf_exempt
+def modify_industry_info(request):
+
+    cookies = request.COOKIES
+    if "session_id" not in cookies:
+        return redirect("/?session_timeout=1")
+
+    success, data = database.mod_active_session(cookies["session_id"])
+
+    if not success:
+        return redirect("/?session_timeout=1")
+    user_data = make_user_session_dict(data)
+
+    success, data = database.get_industry_info(user_data)
+    industry_details = make_industry_info_dict(data)
+
+    if request.method == "GET":
+        response = render(request, "info_form_industry.html", industry_details)
+        set_cookie(response, cookies["session_id"])
+        return response
+
+    else:
+        args = get_args(request)
+
+        for elem in args.keys():
+            if args[elem] == "":
+                industry_details["invalid_data"] = 1
+                response = render(request, "info_form_industry.html", industry_details)
+                set_cookie(response, cookies["session_id"])
+                return response
+
+        args["phone_num"] = get_digits(args["phone_num"])
+
+        if len(args["phone_num"]) != 10:
+            print("Phone Number not 10 digits")
+            industry_details["invalid_data"] = 1
+            response = render(request, "info_form_industry.html", industry_details)
+            set_cookie(response, cookies["session_id"])
+            return response
+
+        if database.update_industry_info(args):
+            response = redirect("/home/industryhome?update_successful=1")
+            set_cookie(response, cookies["session_id"])
+            return response
+        else:
+            response = redirect("/home/industryhome?update_failed=1")
+            set_cookie(response, cookies["session_id"])
+            return response
+
+def make_industry_info_dict(data):
+    d = {}
+    d["emailid"] = data[0]
+    d["fname"] = data[1]
+    d["lname"] = data[2]
+    d["ind_name"] = data[3]
+    d["phone_num"] = data[4]
+    return d

@@ -11,6 +11,8 @@ Create Table Driver_Info (
     lname VarChar(120),
     phone_num VarChar(10),
     license_num VarChar(30),
+    start_loc VarChar(30),
+    end_loc VarChar(30),
     Primary Key(emailid),
     Foreign Key (emailid) References User_Accounts(emailid) On Delete Cascade
 );

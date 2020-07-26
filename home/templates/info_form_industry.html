@@ -11,7 +11,7 @@
 <link rel="canonical" href="https://form.jotform.com/202064837090452">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=1">
 <meta name="HandheldFriendly" content="true">
-<title>Driver Details Form</title>
+<title>Industry Details Form</title>
 <link type="text/css" media="print" rel="stylesheet" href="/static/info_form_files/printForm.css">
 <link type="text/css" rel="stylesheet" href="/static/info_form_files/5e6b428acc8c4e222d1beb91.css">
 <link type="text/css" rel="stylesheet" href="/static/info_form_files/payment_styles.css">
@@ -37,9 +37,9 @@ if (window.JotForm && JotForm.accessible) $('input_12').setAttribute('tabindex',
     /*INIT-END*/
 	});
 
-   JotForm.prepareCalculationsOnTheFly([null,{"name":"clickTo","qid":"1","text":"Driver Details:","type":"control_head"},{"name":"submit","qid":"2","text":"Submit","type":"control_button"},{"name":"fullName3","qid":"3","text":"Full Name","type":"control_fullname"},{"name":"address4","qid":"4","text":"Address","type":"control_address"},{"name":"phoneNumber5","qid":"5","text":"Phone Number","type":"control_phone"},{"name":"email6","qid":"6","subLabel":"example@example.com","text":"E-mail","type":"control_email"},{"name":"clickTo7","qid":"7","text":"","type":"control_text"},{"name":"howDid8","qid":"8","text":"How did you hear about us?","type":"control_dropdown"},{"name":"other","qid":"9","text":"Other","type":"control_textbox"},null,{"name":"feedbackAbout11","qid":"11","text":"Feedback about us:","type":"control_textarea"},{"name":"suggestionsIf","qid":"12","text":"Suggestions if any for further improvement:","type":"control_textarea"},{"name":"willYou","qid":"13","text":"Will you be willing to recommend us?","type":"control_checkbox"},{"name":"pleaseGive14","qid":"14","text":"Please give reference of any two people whom you feel:","type":"control_matrix"}]);
+   JotForm.prepareCalculationsOnTheFly([null,{"name":"clickTo","qid":"1","text":"Industry Details:","type":"control_head"},{"name":"submit","qid":"2","text":"Submit","type":"control_button"},{"name":"fullName3","qid":"3","text":"Full Name","type":"control_fullname"},{"name":"address4","qid":"4","text":"Address","type":"control_address"},{"name":"phoneNumber5","qid":"5","text":"Phone Number","type":"control_phone"},{"name":"email6","qid":"6","subLabel":"example@example.com","text":"E-mail","type":"control_email"},{"name":"clickTo7","qid":"7","text":"","type":"control_text"},{"name":"howDid8","qid":"8","text":"How did you hear about us?","type":"control_dropdown"},{"name":"other","qid":"9","text":"Other","type":"control_textbox"},null,{"name":"feedbackAbout11","qid":"11","text":"Feedback about us:","type":"control_textarea"},{"name":"suggestionsIf","qid":"12","text":"Suggestions if any for further improvement:","type":"control_textarea"},{"name":"willYou","qid":"13","text":"Will you be willing to recommend us?","type":"control_checkbox"},{"name":"pleaseGive14","qid":"14","text":"Please give reference of any two people whom you feel:","type":"control_matrix"}]);
    setTimeout(function() {
-JotForm.paymentExtrasOnTheFly([null,{"name":"clickTo","qid":"1","text":"Driver Details:","type":"control_head"},{"name":"submit","qid":"2","text":"Submit","type":"control_button"},{"name":"fullName3","qid":"3","text":"Full Name","type":"control_fullname"},{"name":"address4","qid":"4","text":"Address","type":"control_address"},{"name":"phoneNumber5","qid":"5","text":"Phone Number","type":"control_phone"},{"name":"email6","qid":"6","subLabel":"example@example.com","text":"E-mail","type":"control_email"},{"name":"clickTo7","qid":"7","text":"","type":"control_text"},{"name":"howDid8","qid":"8","text":"How did you hear about us?","type":"control_dropdown"},{"name":"other","qid":"9","text":"Other","type":"control_textbox"},null,{"name":"feedbackAbout11","qid":"11","text":"Feedback about us:","type":"control_textarea"},{"name":"suggestionsIf","qid":"12","text":"Suggestions if any for further improvement:","type":"control_textarea"},{"name":"willYou","qid":"13","text":"Will you be willing to recommend us?","type":"control_checkbox"},{"name":"pleaseGive14","qid":"14","text":"Please give reference of any two people whom you feel:","type":"control_matrix"}]);}, 20);
+JotForm.paymentExtrasOnTheFly([null,{"name":"clickTo","qid":"1","text":"Industry Details:","type":"control_head"},{"name":"submit","qid":"2","text":"Submit","type":"control_button"},{"name":"fullName3","qid":"3","text":"Full Name","type":"control_fullname"},{"name":"address4","qid":"4","text":"Address","type":"control_address"},{"name":"phoneNumber5","qid":"5","text":"Phone Number","type":"control_phone"},{"name":"email6","qid":"6","subLabel":"example@example.com","text":"E-mail","type":"control_email"},{"name":"clickTo7","qid":"7","text":"","type":"control_text"},{"name":"howDid8","qid":"8","text":"How did you hear about us?","type":"control_dropdown"},{"name":"other","qid":"9","text":"Other","type":"control_textbox"},null,{"name":"feedbackAbout11","qid":"11","text":"Feedback about us:","type":"control_textarea"},{"name":"suggestionsIf","qid":"12","text":"Suggestions if any for further improvement:","type":"control_textarea"},{"name":"willYou","qid":"13","text":"Will you be willing to recommend us?","type":"control_checkbox"},{"name":"pleaseGive14","qid":"14","text":"Please give reference of any two people whom you feel:","type":"control_matrix"}]);}, 20);
 </script>
 
 {% if invalid_data %}
@@ -51,14 +51,14 @@ alert("Invalid Data, Please Try Again")
 <script>
 	function cancel_update() {
 		if(confirm("Are you sure you want to Cancel the Changes?")){
-			window.location.replace("driverhome");
+			window.location.replace("industryhome");
 		}
 	}
 </script>
 
 </head>
 <body>
-<form class="jotform-form" action="/home/moddriverdetails" method="post" autocomplete="on" novalidate="true">
+<form class="jotform-form" action="/home/modindustrydetails" method="post" autocomplete="on" novalidate="true">
 
 	<input type="hidden" name="emailid" value={{emailid}}>
 
@@ -68,7 +68,7 @@ alert("Invalid Data, Please Try Again")
         <div class="form-header-group  header-large">
           <div class="header-text httal htvam">
             <h1 id="header_1" class="form-header" data-component="header">
-              Driver Details:
+              Industry Details:
             </h1>
           </div>
         </div>
@@ -106,24 +106,9 @@ alert("Invalid Data, Please Try Again")
         </div>
       </li>
 
-      <li class="form-line jf-required" data-type="control_phone" id="id_5">
-        <label class="form-label form-label-top form-label-auto" id="label_5" for="input_5_full">
-          Phone Number
-          <span class="form-required">
-            *
-          </span>
-        </label>
-        <div id="cid_5" class="form-input-wide jf-required" data-layout="half">
-          <span class="form-sub-label-container " style="vertical-align:top">
-            <input type="tel" id="input_5_full" name="phone_num" data-type="mask-number" class="mask-phone-number form-textbox validate[required, Fill Mask]" style="width:310px" data-masked="true" value={{phone_num}} data-component="phone" aria-labelledby="label_5" required="" im-insert="true" maskvalue="(###) ###-####">
-            <label class="form-sub-label" for="input_5_full" id="sublabel_5_masked" style="min-height:13px" aria-hidden="false">  </label>
-          </span>
-        </div>
-      </li>
-
 			<li class="form-line jf-required" data-type="control_fullname" id="id_3">
 				<label class="form-label form-label-top form-label-auto" id="label_3" for="first_3">
-					License Number
+					Industry Name
 					<span class="form-required">
 						*
 					</span>
@@ -132,10 +117,10 @@ alert("Invalid Data, Please Try Again")
 					<div data-wrapper-react="true">
 						<span class="form-sub-label-container " style="vertical-align:top" data-input-type="first">
 
-						{% if license_num %}
-              <input type="text" id="first_3" name="license_num" value={{license_num}} class="form-textbox validate[required]" size="10" data-component="first" aria-labelledby="label_3 sublabel_3_first" required="">
+						{% if ind_name %}
+              <input type="text" id="first_3" name="ind_name" value={{ind_name}} class="form-textbox validate[required]" size="10" data-component="first" aria-labelledby="label_3 sublabel_3_first" required="">
 						{% elif 1 %}
-							<input type="text" id="first_3" name="license_num" value="" class="form-textbox validate[required]" size="10" data-component="first" aria-labelledby="label_3 sublabel_3_first" required="">
+							<input type="text" id="first_3" name="ind_name" value="" class="form-textbox validate[required]" size="10" data-component="first" aria-labelledby="label_3 sublabel_3_first" required="">
 						{% endif %}
 
 						</span>
@@ -143,47 +128,18 @@ alert("Invalid Data, Please Try Again")
 				</div>
 			</li>
 
-			<li class="form-line jf-required" data-type="control_fullname" id="id_3">
-				<label class="form-label form-label-top form-label-auto" id="label_3" for="first_3">
-					Start Location For Trip
+			<li class="form-line jf-required" data-type="control_phone" id="id_5">
+				<label class="form-label form-label-top form-label-auto" id="label_5" for="input_5_full">
+					Phone Number
 					<span class="form-required">
 						*
 					</span>
 				</label>
-				<div id="cid_3" class="form-input-wide jf-required" data-layout="full">
-					<div data-wrapper-react="true">
-						<span class="form-sub-label-container " style="vertical-align:top" data-input-type="first">
-
-						{% if start_loc %}
-              <input type="text" id="first_3" name="start_loc" value={{start_loc}} class="form-textbox validate[required]" size="10" data-component="first" aria-labelledby="label_3 sublabel_3_first" required="">
-						{% elif 1 %}
-							<input type="text" id="first_3" name="start_loc" value="" class="form-textbox validate[required]" size="10" data-component="first" aria-labelledby="label_3 sublabel_3_first" required="">
-						{% endif %}
-
-						</span>
-					</div>
-				</div>
-			</li>
-
-			<li class="form-line jf-required" data-type="control_fullname" id="id_3">
-				<label class="form-label form-label-top form-label-auto" id="label_3" for="first_3">
-					End Location For Trip
-					<span class="form-required">
-						*
+				<div id="cid_5" class="form-input-wide jf-required" data-layout="half">
+					<span class="form-sub-label-container " style="vertical-align:top">
+						<input type="tel" id="input_5_full" name="phone_num" data-type="mask-number" class="mask-phone-number form-textbox validate[required, Fill Mask]" style="width:310px" data-masked="true" value={{phone_num}} data-component="phone" aria-labelledby="label_5" required="" im-insert="true" maskvalue="(###) ###-####">
+						<label class="form-sub-label" for="input_5_full" id="sublabel_5_masked" style="min-height:13px" aria-hidden="false">  </label>
 					</span>
-				</label>
-				<div id="cid_3" class="form-input-wide jf-required" data-layout="full">
-					<div data-wrapper-react="true">
-						<span class="form-sub-label-container " style="vertical-align:top" data-input-type="first">
-
-						{% if end_loc %}
-              <input type="text" id="first_3" name="end_loc" value={{end_loc}} class="form-textbox validate[required]" size="10" data-component="first" aria-labelledby="label_3 sublabel_3_first" required="">
-						{% elif 1 %}
-							<input type="text" id="first_3" name="end_loc" value="" class="form-textbox validate[required]" size="10" data-component="first" aria-labelledby="label_3 sublabel_3_first" required="">
-						{% endif %}
-
-						</span>
-					</div>
 				</div>
 			</li>
 

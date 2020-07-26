@@ -26,10 +26,21 @@ def register(request):
         for elem in args.keys():
             if args[elem] == "":
                 return render(request, "sign_up.html", {"invalid_login": 1})
+
         if database.add_user_account(args):
-            driver_details = make_driver_info_dict([args["emailid"], "", "", "", ""])
-            database.add_driver_info(driver_details)
-            return render(request, "sign_up.html", {"register_success": 1})
+
+            if args["type_of_acc"] == "driver":
+                driver_details = make_driver_info_dict([args["emailid"], "", "", "", ""])
+                database.add_driver_info(driver_details)
+                return render(request, "sign_up.html", {"register_success": 1})
+
+            elif args["type_of_acc"] == "industry":
+                industry_details = make_industry_info_dict([args["emailid"], "", "", ""])
+                database.add_industry_info(industry_details)
+                return render(request, "sign_up.html", {"register_success": 1})
+
+            else:
+                print("SANITY CHECK type_of_acc neither driver or industry")
 
     return render(request, "sign_up.html", {"acc_exists": 1})
 
@@ -69,7 +80,11 @@ def signin(request):
             return response
 
         elif user_data["type_of_acc"] == "industry":
-            return redirect("/home/industryhome")
+            response = redirect("/home/industryhome")
+            response.set_cookie("session_id", value=session_id,
+                max_age=(5*60), domain=domain_name)
+
+            return response
         else:
             print("ERROR SANITY CHECK type_of_acc")
 
@@ -118,5 +133,13 @@ def make_driver_info_dict(data):
     d["lname"] = data[2]
     d["phone_num"] = data[3]
     d["license_num"] = data[4]
+    return d
 
+def make_industry_info_dict(data):
+    d = {}
+    d["emailid"] = data[0]
+    d["fname"] = data[1]
+    d["lname"] = data[2]
+    d["ind_name"] = data[3]
+    d["phone_num"] = data[4]
     return d

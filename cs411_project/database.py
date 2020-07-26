@@ -117,8 +117,9 @@ def add_driver_info(data):
         if row != None:
             return False
 
-        cursor.execute("Insert Into Driver_Info Values (%s, %s, %s, %s, %s)",
-            [data["emailid"], data["fname"], data["lname"], data["phone_num"], data["license_num"]]
+        cursor.execute("Insert Into Driver_Info Values (%s, %s, %s, %s, %s, %s, %s)",
+            [data["emailid"], data["fname"], data["lname"], data["phone_num"],
+            data["license_num"], data["start_loc"], data["end_loc"]]
         )
 
         return True
@@ -154,10 +155,10 @@ def get_driver_info(data):
         # Driver acc not present in database, SANITY CHECK
         if row == None:
             print("SANITY CHECK Driver info not present")
-            cursor.execute("Insert Into Driver_Info Values (%s, %s, %s, %s, %s)",
-                [data["emailid"], "", "", "", ""]
+            cursor.execute("Insert Into Driver_Info Values (%s, %s, %s, %s, %s, %s, %s)",
+                [data["emailid"], "", "", "", "", "", ""]
             )
-            return True, [data["emailid"], "", "", "", ""]
+            return True, [data["emailid"], "", "", "", "", "", ""]
 
         return True, row
 
@@ -217,3 +218,56 @@ def mod_active_session(session_id):
             [sql_time, session_id])
 
             return True, row
+
+def add_industry_info(data):
+    with connection.cursor() as cursor:
+        cursor.execute("Select * from Ind_Info where emailid = %s", [data["emailid"]])
+
+        row = cursor.fetchone()
+        # Driver acc already present in database, SANITY CHECK
+        if row != None:
+            return False
+
+        cursor.execute("Insert Into Ind_Info Values (%s, %s, %s, %s, %s)",
+            [data["emailid"], data["fname"], data["lname"], data["ind_name"], data["phone_num"]]
+        )
+
+        return True
+
+def update_industry_info(data):
+    with connection.cursor() as cursor:
+        cursor.execute("Select * from Ind_Info where emailid = %s", [data["emailid"]])
+
+        row = cursor.fetchone()
+        # Driver acc not present in database, SANITY CHECK
+        if row == None:
+            print("Something Weird Happened Sanity Check")
+            return False
+
+        cmd = "Update Ind_Info set "
+        for key in data.keys():
+            if key != "emailid":
+                cmd += str(key) + " = " + '"' + str(data[key]) + '"' + ","
+        cmd = cmd[0:-1]
+        cmd += " where emailid = " + '"' + str(data["emailid"]) + '"'
+
+        if DEBUG:
+            print(cmd)
+
+        cursor.execute(cmd)
+        return True
+
+def get_industry_info(data):
+    with connection.cursor() as cursor:
+        cursor.execute("Select * from Ind_Info where emailid = %s", [data["emailid"]])
+
+        row = cursor.fetchone()
+        # Driver acc not present in database, SANITY CHECK
+        if row == None:
+            print("SANITY CHECK Driver info not present")
+            cursor.execute("Insert Into Ind_Info Values (%s, %s, %s, %s, %s)",
+                [data["emailid"], "", "", "", ""]
+            )
+            return True, [data["emailid"], "", "", "", ""]
+
+        return True, row
