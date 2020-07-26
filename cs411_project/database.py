@@ -271,3 +271,11 @@ def get_industry_info(data):
             return True, [data["emailid"], "", "", "", ""]
 
         return True, row
+
+def get_relevant_drivers(data):
+    with connection.cursor() as cursor:
+        cursor.execute("Select * from Driver_Info where start_loc = %s and end_loc = %s",
+            [data["start_loc"], data["end_loc"]])
+
+        rows = cursor.fetchall()
+        return rows

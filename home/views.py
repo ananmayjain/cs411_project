@@ -221,6 +221,51 @@ def modify_industry_info(request):
             set_cookie(response, cookies["session_id"])
             return response
 
+@csrf_exempt
+def find_drivers(request):
+
+    cookies = request.COOKIES
+    if "session_id" not in cookies:
+        return redirect("/?session_timeout=1")
+
+    success, data = database.mod_active_session(cookies["session_id"])
+
+    if not success:
+        return redirect("/?session_timeout=1")
+    user_data = make_user_session_dict(data)
+
+    # Find Drivers with Correct Start & End Points
+
+    if request.method == "GET":
+        response = render(request, "find_drivers.html")
+        set_cookie(response, cookies["session_id"])
+        return response
+
+    else:
+        args = get_args(request)
+
+        for elem in args.keys():
+            if args[elem] == "":
+                response = render(request, "info_form_industry.html", {"invalid_data": 1})
+                set_cookie(response, cookies["session_id"])
+                return response
+
+
+        results = database.get_relevant_drivers(args)
+        if len(results) == 0:
+            response = render(request, "find_drivers.html", {"no_driver": 1})
+            set_cookie(response, cookies["session_id"])
+            return response
+
+        driver_list = {}
+        for i in range(len(results)):
+            driver_list[i] = make_driver_info_dict(results[i])
+
+        response = render(request, "table.html", {"driver_list": driver_list})
+        set_cookie(response, cookies["session_id"])
+        return response
+
+
 def make_industry_info_dict(data):
     d = {}
     d["emailid"] = data[0]

@@ -1,12 +1,15 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from cs411_project import database
+from cs411_project import database, data_inserter
 from django.views.decorators.csrf import csrf_exempt
 import datetime
 import random
 import hashlib
 
 domain_name = "localhost"
+
+def add_random_data(request):
+    data_inserter.add_data(5)
 
 def login_page(request):
 
