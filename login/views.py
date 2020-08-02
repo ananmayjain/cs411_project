@@ -33,7 +33,7 @@ def register(request):
         if database.add_user_account(args):
 
             if args["type_of_acc"] == "driver":
-                driver_details = make_driver_info_dict([args["emailid"], "", "", "", ""])
+                driver_details = make_driver_info_dict([args["emailid"], "", "", "", "", "", ""])
                 database.add_driver_info(driver_details)
                 return render(request, "sign_up.html", {"register_success": 1})
 
@@ -75,7 +75,6 @@ def signin(request):
         session_id, expiry_time = database.add_active_session(user_data)
 
         if user_data["type_of_acc"] == "driver":
-
             response = redirect("/home/driverhome")
             response.set_cookie("session_id", value=session_id,
                 max_age=(5*60), domain=domain_name)
@@ -136,6 +135,8 @@ def make_driver_info_dict(data):
     d["lname"] = data[2]
     d["phone_num"] = data[3]
     d["license_num"] = data[4]
+    d["start_loc"] = data[5]
+    d["end_loc"] = data[6]
     return d
 
 def make_industry_info_dict(data):

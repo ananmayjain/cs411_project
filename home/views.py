@@ -17,10 +17,12 @@ def driver_home(request):
 
     cookies = request.COOKIES
     if "session_id" not in cookies:
+        print("Session ID Not in Cookies in driver_home")
         return redirect("/?session_timeout=1")
 
     success, data = database.mod_active_session(cookies["session_id"])
     if not success:
+        print("Mod active session failed in driver_home")
         return redirect("/?session_timeout=1")
 
     if "update_successful" in request.GET:
@@ -46,6 +48,7 @@ def modify_driver_info(request):
 
     success, data = database.get_driver_info(user_data)
     driver_details = make_driver_info_dict(data)
+    print(driver_details)
 
     if request.method == "GET":
         response = render(request, "info_form.html", driver_details)
@@ -246,7 +249,7 @@ def find_drivers(request):
 
         for elem in args.keys():
             if args[elem] == "":
-                response = render(request, "info_form_industry.html", {"invalid_data": 1})
+                response = render(request, "find_drivers.html", {"invalid_data": 1})
                 set_cookie(response, cookies["session_id"])
                 return response
 

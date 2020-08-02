@@ -14,7 +14,10 @@ Create Table Driver_Info (
     emailid VarChar(120) NOT NULL,
     fname VarChar(120),
     lname VarChar(120),
-    license_num INT,
+    phone_num VarChar(10),
+    license_num VarChar(30),
+    start_loc VarChar(30),
+    end_loc VarChar(30),
     Primary Key(emailid),
     Foreign Key (emailid) References User_Accounts(emailid) On Delete Cascade
 );
@@ -28,8 +31,14 @@ Create Table Ind_Info (
     Foreign Key (emailid) References User_Accounts(emailid) On Delete Cascade
 );
 
-'''
+Create Table active_sessions (
+    session_id VarChar(256) NOT NULL,
+    emailid VarChar(120) NOT NULL,
+    valid_till DATETIME NOT NULL,
+    Primary Key (session_id)
+);
 
+'''
 
 ''' Command TEMPLATES '''
 insert_user_acc = "Insert Into User_Accounts values (%s, %s, %s, %s, %s, %d, %d)"
