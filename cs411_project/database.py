@@ -28,6 +28,20 @@ Create Table Ind_Info (
     Foreign Key (emailid) References User_Accounts(emailid) On Delete Cascade
 );
 
+Create Table Trips (
+    trip_id VarChar(120) NOT NULL,
+    completed boolean,
+    driver_email VarChar(120) NOT NULL,
+    ind_email VarChar(120) NOT NULL,
+    rating_from_driver DECIMAL(3),
+    rating_from_industry DECIMAL(3),
+    comments_from_driver VarChar(300),
+    comments_from_industry VarChar(300),
+    Primary Key(trip_id),
+    Foreign Key (driver_email) References Driver_Info(emailid) On Delete Cascade,
+    Foreign Key (ind_email) References Ind_Info(emailid) On Delete Cascade
+);
+
 '''
 
 
@@ -38,6 +52,10 @@ from django.db import connection
 import hashlib
 import datetime
 import threading
+import random
+import string
+from cs411_project.data_inserter import gen_random_trip_id
+
 
 DEBUG = 1
 
@@ -279,3 +297,125 @@ def get_relevant_drivers(data):
 
         rows = cursor.fetchall()
         return rows
+
+def get_avg_driver_rating(data):
+    # assume this is called from the driver page
+    # I can't do multiline queries it complains
+    # I can put it in comments for readability
+    with connection.cursor() as cursor:
+        '''
+            SELECT avg(rating_from_industry) AS value 
+            FROM Trips WHERE driver_email = %s 
+            GROUP BY driver_email
+        ''' 
+        cursor.execute(
+            "SELECT avg(rating_from_industry) AS value FROM Trips WHERE driver_email = %s GROUP BY driver_email", 
+            [data["email"]] )
+        row = cursor.fetchone()
+        #No trips then return -1
+        if row == None:
+            print("This driver has no previous trips")
+            return -1
+        return row['value'] 
+
+def get_avg_ind_rating(data):
+    with connection.cursor() as cursor:
+        '''
+            SELECT avg(rating_from_driver) AS value 
+            FROM Trips WHERE ind_email = %s 
+            GROUP BY ind_email
+        '''
+        cursor.execute(
+            "SELECT avg(rating_from_driver) AS value FROM Trips WHERE ind_email = %s GROUP BY ind_email",
+            [data["email"]])
+        row = cursor.fetchone()
+        #No trips then return -1
+        if row == None:
+            print("This industry has no previous trips")
+            return -1
+        return row['value']
+
+def get_driver_with_similar_rating(data):
+    ind_rating = get_avg_ind_rating(data)
+    return get_driver_with_rating(data, ind_rating)
+
+def get_driver_with_rating_gte(data, value):
+    with connection.cursor() as cursor:
+        '''
+            Select emailid, fname, lname, phone_num
+            FROM Driver_Info where start_loc = %s and end_loc = %s amd emailid IN (
+            SELECT d.emailid as emailid
+            FROM Driver_Info d join Trips t on d.emailid = t.driver_email
+            GROUP BY d.emailid
+            HAVING avg(rating_from_industry) >= ind_rating
+            )
+
+        '''
+        cursor.execute(
+            "Select emailid, fname, lname, phone_num FROM Driver_Info where start_loc= % s and end_loc = % s amd emailid IN ( SELECT d.emailid as emailid FROM Driver_Info d join Trips t on d.emailid=t.driver_email GROUP BY d.emailid HAVING avg(rating_from_industry) >= %s )",
+            [data["start_loc"], data["end_loc"], str(value)]
+        )
+
+        rows = cursor.fetchall()
+        return rows
+
+def get_all_driver_trips(data):
+    with connection.cursor() as cursor:
+        '''
+        SELECT trip_id, completed, ind_email, rating_from_driver, rating_from_industry
+        FROM Driver_Info d join Trips t on d.emailid = t.driver_email
+        WHERE d.emailid = %s
+        '''
+        cursor.execute(
+            "SELECT trip_id, completed, ind_email, rating_from_driver, rating_from_industry FROM Driver_Info d join Trips t on d.emailid=t.driver_email WHERE d.emailid= % s",
+             [data["emailid"]]
+        )
+        rows = cursor.fetchall()
+        return rows
+
+def get_all_industry_trips(data):
+    with connection.cursor() as cursor:
+        '''
+        SELECT trip_id, completed, driver_email, rating_from_driver, rating_from_industry
+        FROM Ind_Info i join Trips t on i.emailid = t.ind_email
+        WHERE i.emailid = %s
+        '''
+        cursor.execute(
+            "SELECT trip_id, completed, driver_email, rating_from_driver, rating_from_industry FROM Ind_Info i join Trips t on i.emailid=t.ind_email WHERE i.emailid= % s",
+            [data["emailid"]]
+        )
+        rows = cursor.fetchall()
+        return rows
+
+# In this we are only creating the trip
+# the comments and ratings should come in the update
+def create_trip(data):
+    trip_id = gen_random_trip_id()
+    with connection.cursor() as cursor:
+        # on the super off chance that the trip id is duplicate redo
+        cursor.execute("SELECT * FROM Trips where trip_id = %s", [trip_id])
+        row = cursor.fetchall()
+        if row != None:
+            return create_trip(data)
+
+        cursor.execute(
+            "INSERT Into Trips(trip_id, completed, driver_email, ind_email) values(%s, 0, %s, %s)",
+            [trip_id, data["driver_email"], data["ind_email"]]
+        )
+    return True
+#In this we update completion, ratings, and comments
+def update_trip(data):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM Trips WHERE trip_id = %s", [data["trip_id"]])
+        row = cursor.fetchall()
+        if row == None:
+            print("This trip does not exist")
+            return False
+
+        cursor.execute(
+            "UPDATE Trips SET complete = 1, SET rating_from_driver = %s, SET rating_from_ind = %s, SET comments_from_driver = %s, SET comments_from_ind = %s WHERE trip_id = %s",
+            [data["rating_from_driver"], data["rating_from_industry"],
+             data["comments_from_driver"], data["comments_from_industry"], data["trip_id"]]
+        )
+
+        return True

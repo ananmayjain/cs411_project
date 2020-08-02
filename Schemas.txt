@@ -48,3 +48,5 @@ Create Table Trips (
     Foreign Key (driver_email) References Driver_Info(emailid) On Delete Cascade,
     Foreign Key (ind_email) References Ind_Info(emailid) On Delete Cascade
 );
+
+            
