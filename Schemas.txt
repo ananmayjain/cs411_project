@@ -32,3 +32,19 @@ Create Table active_sessions (
     valid_till DATETIME NOT NULL,
     Primary Key (session_id)
 );
+// I put DECIMAL(3) becaue it will accept values from -999 to 999
+// We could have percentage ratings from 0 to 100
+// Idk what size the comments should be
+Create Table Trips (
+    trip_id VarChar(120) NOT NULL,
+    completed boolean,
+    driver_email VarChar(120) NOT NULL,
+    ind_email VarChar(120) NOT NULL,
+    rating_from_driver DECIMAL(3),
+    rating_from_industry DECIMAL(3),
+    comments_from_driver VarChar(300),
+    comments_from_industry VarChar(300),
+    Primary Key(trip_id),
+    Foreign Key (driver_email) References Driver_Info(emailid) On Delete Cascade,
+    Foreign Key (ind_email) References Ind_Info(emailid) On Delete Cascade
+);
