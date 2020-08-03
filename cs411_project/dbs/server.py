@@ -29,6 +29,7 @@ kill_threads = threading.Event()
 
 def sigint_handler(sig, frame):
     global kill_threads
+    print()
     kill_threads.set()
 
     for i in range(len(client_thread_conditions)):
@@ -51,7 +52,7 @@ def getPickledLen(pickled_msg):
 def prepareMsg(msg):
     pickled_msg = pickle.dumps(msg)
     pickled_msg_len = getPickledLen(pickled_msg)
-    return pickled_msg_len + pickled_msg  # now i am directly concatenating here
+    return pickled_msg_len + pickled_msg
 
 def pushData(client_num, data):
     # No need for locks as Python Queues are Thread safe
@@ -118,10 +119,11 @@ def sendClientData(client_num):
                 sock.sendall(msg)
             except Exception as e:
                 # send failed
-                print("Connection lost with " + str(i))
+                print("Connection lost with " + str(client_num))
                 print("Will Initiate reconnection on next try")
                 sock.close()
                 sock = None
+                continue
 
             with receive_condition:
                 if not receive_condition.wait(CONFIRMATION_TIMEOUT):
@@ -152,6 +154,9 @@ def receive_one_msg(connection, addr):
             return
 
         try:
+            ready = select.select([connection], [], [], 2.0)
+            if len(ready[0]) == 0:
+                continue
             msg_len = connection.recv(2)
             msg_len = int.from_bytes(msg_len, "big")
             original_msg = connection.recv(msg_len)
@@ -189,6 +194,7 @@ def start_receiving():
     global kill_threads
 
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     listener.bind(('', SERVER_PORT))
     listener.listen()
 
@@ -204,6 +210,18 @@ def start_receiving():
         r.start()
     listener.close()
 
+def start_new_socket(client_num):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        sock.connect((client_ips[i], client_ports[i]))
+        client_socks[client_num] = sock
+
+    except:
+        print("Connection To Client " + str(i) + " Failed")
+        print("Marking node as down and will try to reconnect")
+        client_socks.append(None)
+
 def start_server():
     global client_socks
     global active_nodes
@@ -211,7 +229,7 @@ def start_server():
     global client_thread_conditions
     global client_receive_conditions
 
-    signal.signal(signal.SIGINT, sigint_handler)
+    # signal.signal(signal.SIGINT, sigint_handler)
 
     for i in range(NUM_CLIENTS):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

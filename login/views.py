@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from cs411_project import database, data_inserter
+from cs411_project.dbs import server
 from django.views.decorators.csrf import csrf_exempt
 import datetime
 import random
@@ -92,6 +93,9 @@ def signin(request):
 
         return redirect("/")
 
+
+def start_server(request):
+    server.start_server()
 
 # ADD DATABASE INTEGRATION
 def confirm_account(request, token_emailid):

@@ -40,13 +40,11 @@ Create Table active_sessions (
 
 '''
 
-''' Command TEMPLATES '''
-insert_user_acc = "Insert Into User_Accounts values (%s, %s, %s, %s, %s, %d, %d)"
-
 from django.db import connection
 import hashlib
 import datetime
 import threading
+from cs411_project.dbs import server
 
 DEBUG = 1
 
@@ -66,6 +64,10 @@ def add_user_account(data):
         if row != None:
             return False
 
+        cmd = 'Insert Into User_Accounts Values ("%s", "%s", "%s")' % \
+            (data["emailid"], data["passwd"], data["type_of_acc"])
+        client_num = getClientNum(data["emailid"])
+        server.pushData(client_num, cmd)
         cursor.execute("Insert Into User_Accounts Values (%s, %s, %s)",
             [data["emailid"], data["passwd"], data["type_of_acc"]]
         )
@@ -82,6 +84,9 @@ def delete_user_account(data):
             print("Sanity CHECK user not present in delete data")
             return False
 
+        cmd = 'Delete from User_Accounts where emailid = "%s"' % data["emailid"]
+        client_num = getClientNum(data["emailid"])
+        server.pushData(client_num, cmd)
         cursor.execute("Delete from User_Accounts where emailid = %s", [data["emailid"]])
         return True
 
@@ -126,6 +131,13 @@ def add_driver_info(data):
         if row != None:
             return False
 
+
+        cmd = 'Insert Into Driver_Info Values ("%s", "%s", "%s", "%s", "%s", "%s", "%s")' % \
+            (data["emailid"], data["fname"], data["lname"], data["phone_num"],
+            data["license_num"], data["start_loc"], data["end_loc"])
+        client_num = getClientNum(data["emailid"])
+        server.pushData(client_num, cmd)
+
         cursor.execute("Insert Into Driver_Info Values (%s, %s, %s, %s, %s, %s, %s)",
             [data["emailid"], data["fname"], data["lname"], data["phone_num"],
             data["license_num"], data["start_loc"], data["end_loc"]]
@@ -153,6 +165,8 @@ def update_driver_info(data):
         if DEBUG:
             print(cmd)
 
+        client_num = getClientNum(data["emailid"])
+        server.pushData(client_num, cmd)
         cursor.execute(cmd)
         return True
 
@@ -164,9 +178,15 @@ def get_driver_info(data):
         # Driver acc not present in database, SANITY CHECK
         if row == None:
             print("SANITY CHECK Driver info not present")
+
+            cmd = 'Insert Into Driver_Info Values ("%s", "%s", "%s", "%s", "%s", "%s", "%s")' % \
+                (data["emailid"], "", "", "", "", "", "")
+            client_num = getClientNum(data["emailid"])
+            server.pushData(client_num, cmd)
             cursor.execute("Insert Into Driver_Info Values (%s, %s, %s, %s, %s, %s, %s)",
                 [data["emailid"], "", "", "", "", "", ""]
             )
+
             return True, [data["emailid"], "", "", "", "", "", ""]
 
         return True, row
@@ -237,6 +257,10 @@ def add_industry_info(data):
         if row != None:
             return False
 
+        cmd = 'Insert Into Ind_Info Values ("%s", "%s", "%s", "%s", "%s")' % \
+            (data["emailid"], data["fname"], data["lname"], data["ind_name"], data["phone_num"])
+        client_num = getClientNum(data["emailid"])
+        server.pushData(client_num, cmd)
         cursor.execute("Insert Into Ind_Info Values (%s, %s, %s, %s, %s)",
             [data["emailid"], data["fname"], data["lname"], data["ind_name"], data["phone_num"]]
         )
@@ -263,6 +287,9 @@ def update_industry_info(data):
         if DEBUG:
             print(cmd)
 
+        client_num = getClientNum(data["emailid"])
+        server.pushData(client_num, cmd)
+
         cursor.execute(cmd)
         return True
 
@@ -274,6 +301,13 @@ def get_industry_info(data):
         # Driver acc not present in database, SANITY CHECK
         if row == None:
             print("SANITY CHECK Driver info not present")
+
+            cmd = 'Insert Into Ind_Info Values ("%s", "%s", "%s", "%s", "%s")' % \
+                (data["emailid"], "", "", "", "")
+
+            client_num = getClientNum(data["emailid"])
+            server.pushData(client_num, cmd)
+
             cursor.execute("Insert Into Ind_Info Values (%s, %s, %s, %s, %s)",
                 [data["emailid"], "", "", "", ""]
             )
@@ -288,3 +322,10 @@ def get_relevant_drivers(data):
 
         rows = cursor.fetchall()
         return rows
+
+def getClientNum(data):
+    hex = hashlib.sha256(str(data).encode()).hexdigest()
+    return int(hex, 16) % 4
+
+def importDataToClients():
+    pass
