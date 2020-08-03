@@ -38,7 +38,7 @@ def register(request):
                 return render(request, "sign_up.html", {"register_success": 1})
 
             elif args["type_of_acc"] == "industry":
-                industry_details = make_industry_info_dict([args["emailid"], "", "", ""])
+                industry_details = make_industry_info_dict([args["emailid"], "", "", "", ""])
                 database.add_industry_info(industry_details)
                 return render(request, "sign_up.html", {"register_success": 1})
 

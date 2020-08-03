@@ -22,6 +22,7 @@ Create Table Ind_Info (
     fname VarChar(120),
     lname VarChar(120),
     ind_name VarChar(120),
+    phone_num VarChar(10),
     Primary Key(emailid),
     Foreign Key (emailid) References User_Accounts(emailid) On Delete Cascade
 );
