@@ -23,10 +23,14 @@ def driver_home(request):
     if not success:
         return redirect("/?session_timeout=1")
 
+    user_data = make_user_session_dict(data)
+    success, driver_data = database.get_driver_info(user_data)
+    driver_details = make_driver_info_dict(driver_data)
+    avg_rating = database.get_avg_driver_rating(driver_details)
     if "update_successful" in request.GET:
-        response = render(request, "driver.html", {"update_successful": 1})
+        response = render(request, "driver.html", {"update_successful": 1, "avg_rating": avg_rating[0]})
     else:
-        response = render(request, "driver.html")
+        response = render(request, "driver.html", {"avg_rating": avg_rating[0]})
 
     set_cookie(response, cookies["session_id"])
     return response
@@ -163,11 +167,15 @@ def industry_home(request):
     success, data = database.mod_active_session(cookies["session_id"])
     if not success:
         return redirect("/?session_timeout=1")
+    user_data = make_user_session_dict(data)
+    success, industry_data = database.get_industry_info(user_data)
+    industry_details = make_industry_info_dict(industry_data)
+    avg_rating = database.get_avg_ind_rating(industry_details)
 
     if "update_successful" in request.GET:
-        response = render(request, "industry.html", {"update_successful": 1})
+        response = render(request, "industry.html", {"update_successful": 1, "avg_rating": avg_rating[0]})
     else:
-        response = render(request, "industry.html")
+        response = render(request, "industry.html", {"avg_rating": avg_rating[0]})
 
     set_cookie(response, cookies["session_id"])
     return response

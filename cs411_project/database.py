@@ -310,13 +310,14 @@ def get_avg_driver_rating(data):
         ''' 
         cursor.execute(
             "SELECT avg(rating_from_industry) AS value FROM Trips WHERE driver_email = %s GROUP BY driver_email", 
-            [data["email"]] )
+            [data["emailid"]] )
         row = cursor.fetchone()
         #No trips then return -1
         if row == None:
             print("This driver has no previous trips")
-            return -1
-        return row['value'] 
+            return 0
+
+        return row  
 
 def get_avg_ind_rating(data):
     with connection.cursor() as cursor:
@@ -327,13 +328,13 @@ def get_avg_ind_rating(data):
         '''
         cursor.execute(
             "SELECT avg(rating_from_driver) AS value FROM Trips WHERE ind_email = %s GROUP BY ind_email",
-            [data["email"]])
+            [data["emailid"]])
         row = cursor.fetchone()
         #No trips then return -1
         if row == None:
             print("This industry has no previous trips")
-            return -1
-        return row['value']
+            return 0
+        return row
 
 def get_driver_with_similar_rating(data):
     ind_rating = get_avg_ind_rating(data)

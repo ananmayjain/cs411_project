@@ -76,6 +76,10 @@
                   </li>
                   <li class="nav-item">
                     <div class="tm-nav-link-highlight"></div>
+                    <a class="nav-link" href="find_industry_past_rides.html">My Rides</a>
+                  </li>
+                  <li class="nav-item">
+                    <div class="tm-nav-link-highlight"></div>
                     <a class="nav-link" onclick="sign_out()">Sign Out</a>
                   </li>
                   <li class="nav-item">
@@ -89,6 +93,10 @@
         </div>
       </div>
 
+      {% if avg_rating %}
+      <p>Your average rating is {{avg_rating}} </p>
+      {% endif %}
+      
       <div class="row tm-welcome-row">
         <div class="col-12 tm-page-cols-container">
           <div class="tm-page-col-left tm-welcome-box tm-bg-primary">
