@@ -194,6 +194,15 @@ def industry_home(request):
     industry_details = make_industry_info_dict(industry_data)
     avg_rating = database.get_avg_ind_rating(industry_details)
 
+    args = get_args(request)
+    # we will use key start_loc for driver email
+    # this is because I could not compeltely figure out the js form
+    if len(args) != 0:
+        guy = {}
+        guy["driver_email"] = args["start_loc"]
+        guy["ind_email"] = user_data["emailid"]
+        database.create_trip(guy)
+
     if len(avg_rating) == 0:
         response = render(request, "industry.html")
         return response
@@ -393,3 +402,6 @@ def find_industry_past_rides(request):
                           {"trip_list": trip_list})
         set_cookie(response, cookies["session_id"])
         return response
+
+def book_driver_form(request):
+    return render(request, 'book_driver_form.html')

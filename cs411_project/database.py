@@ -397,7 +397,7 @@ def create_trip(data):
         # on the super off chance that the trip id is duplicate redo
         cursor.execute("SELECT * FROM Trips where trip_id = %s", [trip_id])
         row = cursor.fetchall()
-        if row != None:
+        if row == None:
             return create_trip(data)
 
         cursor.execute(
