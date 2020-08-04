@@ -36,6 +36,13 @@
     <link rel="stylesheet" href="/static/css/all.min.css" />
     <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/static/css/templatemo-style.css" />
+    <!-- Font Awesome Icon Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+      .checked {
+        color: orange;
+      }
+    </style>
   </head>
   <body>
     <div class="container-fluid">
@@ -95,8 +102,11 @@
         </div>
       </div>
 
-      {% if avg_rating %}
-      <p>Your average rating is {{avg_rating}} </p>
+      {% if stars %}
+      <span>Your Rating:</span>
+      {% for i in "x"|rjust:stars %}
+      <span class="fa fa-star checked"></span>
+      {% endfor %}
       {% endif %}
 
       <div class="row tm-welcome-row">

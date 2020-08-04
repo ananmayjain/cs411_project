@@ -28,14 +28,16 @@ def driver_home(request):
     driver_details = make_driver_info_dict(driver_data)
     avg_rating = database.get_avg_driver_rating(driver_details)
 
+    stars = round(avg_rating[0]/100 * 5)
+
     if len(avg_rating) == 0:
         response = render(request, "driver.html")
         return response
 
     if "update_successful" in request.GET:
-        response = render(request, "driver.html", {"update_successful": 1, "avg_rating": avg_rating[0]})
+        response = render(request, "driver.html", {"update_successful": 1, "stars": stars})
     else:
-        response = render(request, "driver.html", {"avg_rating": avg_rating[0]})
+        response = render(request, "driver.html", {"stars":stars})
 
     set_cookie(response, cookies["session_id"])
     return response
@@ -180,11 +182,13 @@ def industry_home(request):
     if len(avg_rating) == 0:
         response = render(request, "industry.html")
         return response
+    
+    stars = round(avg_rating[0]/100 * 5) 
 
     if "update_successful" in request.GET:
-        response = render(request, "industry.html", {"update_successful": 1, "avg_rating": avg_rating[0]})
+        response = render(request, "industry.html", {"update_successful": 1, "stars": stars})
     else:
-        response = render(request, "industry.html", {"avg_rating": avg_rating[0]})
+        response = render(request, "industry.html", {"stars": stars})
 
     set_cookie(response, cookies["session_id"])
     return response
