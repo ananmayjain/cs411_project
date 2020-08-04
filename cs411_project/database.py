@@ -315,7 +315,7 @@ def get_avg_driver_rating(data):
         #No trips then return -1
         if row == None:
             print("This driver has no previous trips")
-            return 0
+            return {}
 
         return row  
 
@@ -333,7 +333,8 @@ def get_avg_ind_rating(data):
         #No trips then return -1
         if row == None:
             print("This industry has no previous trips")
-            return 0
+            return {}
+
         return row
 
 def get_driver_with_similar_rating(data):
@@ -353,7 +354,7 @@ def get_driver_with_rating_gte(data, value):
 
         '''
         cursor.execute(
-            "Select emailid, fname, lname, phone_num FROM Driver_Info where start_loc= % s and end_loc = % s amd emailid IN ( SELECT d.emailid as emailid FROM Driver_Info d join Trips t on d.emailid=t.driver_email GROUP BY d.emailid HAVING avg(rating_from_industry) >= %s )",
+            "Select * FROM Driver_Info where start_loc= %s and end_loc = %s amd emailid IN ( SELECT d.emailid as emailid FROM Driver_Info d join Trips t on d.emailid=t.driver_email GROUP BY d.emailid HAVING avg(rating_from_industry) >= %s )",
             [data["start_loc"], data["end_loc"], str(value)]
         )
 
@@ -363,12 +364,12 @@ def get_driver_with_rating_gte(data, value):
 def get_all_driver_trips(data):
     with connection.cursor() as cursor:
         '''
-        SELECT trip_id, completed, ind_email, rating_from_driver, rating_from_industry
+        SELECT *
         FROM Driver_Info d join Trips t on d.emailid = t.driver_email
         WHERE d.emailid = %s
         '''
         cursor.execute(
-            "SELECT trip_id, completed, ind_email, rating_from_driver, rating_from_industry FROM Driver_Info d join Trips t on d.emailid=t.driver_email WHERE d.emailid= % s",
+            "SELECT * FROM Trips WHERE driver_email= %s",
              [data["emailid"]]
         )
         rows = cursor.fetchall()
@@ -382,7 +383,7 @@ def get_all_industry_trips(data):
         WHERE i.emailid = %s
         '''
         cursor.execute(
-            "SELECT trip_id, completed, driver_email, rating_from_driver, rating_from_industry FROM Ind_Info i join Trips t on i.emailid=t.ind_email WHERE i.emailid= % s",
+            "SELECT * FROM Trips WHERE ind_email = %s"
             [data["emailid"]]
         )
         rows = cursor.fetchall()

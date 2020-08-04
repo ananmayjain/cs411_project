@@ -27,6 +27,11 @@ def driver_home(request):
     success, driver_data = database.get_driver_info(user_data)
     driver_details = make_driver_info_dict(driver_data)
     avg_rating = database.get_avg_driver_rating(driver_details)
+
+    if len(avg_rating) == 0:
+        response = render(request, "driver.html")
+        return response
+
     if "update_successful" in request.GET:
         response = render(request, "driver.html", {"update_successful": 1, "avg_rating": avg_rating[0]})
     else:
@@ -172,6 +177,10 @@ def industry_home(request):
     industry_details = make_industry_info_dict(industry_data)
     avg_rating = database.get_avg_ind_rating(industry_details)
 
+    if len(avg_rating) == 0:
+        response = render(request, "industry.html")
+        return response
+
     if "update_successful" in request.GET:
         response = render(request, "industry.html", {"update_successful": 1, "avg_rating": avg_rating[0]})
     else:
@@ -282,3 +291,49 @@ def make_industry_info_dict(data):
     d["ind_name"] = data[3]
     d["phone_num"] = data[4]
     return d
+
+def make_trip_info_dict(data):
+    d = {}
+    d["trip_id"] = data[0]
+    d["completed"] = data[1]
+    d["driver_email"] = data[2]
+    d["ind_email"] = data[3]
+    d["rating_from_driver"] = data[4]
+    d["rating_from_industry"] = data[5]
+    d["comments_from_driver"] = data[6]
+    d["comments_from_industry"] = data[7]
+    d["status"] = "Completed" if d["completed"] else "Ongoing"
+    #print("Look at me", d)
+    return d
+
+def find_driver_past_rides(request):
+    cookies = request.COOKIES
+    if "session_id" not in cookies:
+        return redirect("/?session_timeout=1")
+
+    success, data = database.mod_active_session(cookies["session_id"])
+
+    if not success:
+        return redirect("/?session_timeout=1")
+
+
+    if request.method == "GET":
+        user_data = make_user_session_dict(data)
+        success, driver_data = database.get_driver_info(user_data)
+        driver_details = make_driver_info_dict(driver_data)
+        results = database.get_all_driver_trips(driver_details)
+        print(driver_details)
+        print(results)
+        if len(results) == 0:
+            print("hello sir")
+            response = render(request, "driver_past_rides.html", {"no_trips": 1})
+            set_cookie(response, cookies["session_id"])
+            return response
+
+        trip_list = {}
+        for i in range(len(results)):
+            trip_list[i] = make_trip_info_dict(results[i])
+
+        response = render(request, "driver_past_rides.html", {"trip_list": trip_list})
+        set_cookie(response, cookies["session_id"])
+        return response
