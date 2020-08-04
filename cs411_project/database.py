@@ -415,9 +415,30 @@ def update_trip(data):
             return False
 
         cursor.execute(
-            "UPDATE Trips SET complete = 1, SET rating_from_driver = %s, SET rating_from_ind = %s, SET comments_from_driver = %s, SET comments_from_ind = %s WHERE trip_id = %s",
+            "UPDATE Trips SET completed = 1, SET rating_from_driver = %s, SET rating_from_ind = %s, SET comments_from_driver = %s, SET comments_from_ind = %s WHERE trip_id = %s",
             [data["rating_from_driver"], data["rating_from_industry"],
              data["comments_from_driver"], data["comments_from_industry"], data["trip_id"]]
         )
 
         return True
+
+def find_pending_trips(data):
+    with connection.cursor() as cursor:
+        '''
+        SELECT *
+        FROM Trips
+        WHERE ind_email = %s
+        '''
+        cursor.execute(
+            "SELECT * FROM Trips WHERE driver_email = %s AND completed=0",
+            [data["emailid"]]
+        )
+        row = cursor.fetchone()
+        return row
+
+def confirm_trip(trip_id):
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "UPDATE Trips SET completed=1 WHERE trip_id=%s",
+            [trip_id]
+        )

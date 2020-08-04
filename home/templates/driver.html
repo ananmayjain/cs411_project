@@ -30,6 +30,12 @@
         window.location.replace("sign_out");
       }
     }
+
+    function accept_pending_trip() {
+        if (confirm("Do you want to confirm trip from {{ind_email}}")) {
+          window.location.replace("driverhome?accept_trip=1")
+        }
+      } 
     </script>
 
     <link rel="stylesheet"  href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" />
@@ -86,6 +92,10 @@
                   <li class="nav-item">
                     <div class="tm-nav-link-highlight"></div>
                     <a class="nav-link" href="find_driver_past_rides">My Rides</a>
+                  </li>
+                  <li class="nav-item">
+                    <div class="tm-nav-link-highlight"></div>
+                    <a class="nav-link" onclick="accept_pending_trip()">Get Trip</a>
                   </li>
                   <li class="nav-item">
                     <div class="tm-nav-link-highlight"></div>

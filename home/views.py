@@ -28,16 +28,31 @@ def driver_home(request):
     driver_details = make_driver_info_dict(driver_data)
     avg_rating = database.get_avg_driver_rating(driver_details)
 
-    stars = round(avg_rating[0]/100 * 5)
+    
+    pending_trip = database.find_pending_trips(driver_details)
+    pending_trip = make_trip_info_dict(pending_trip)
+
+    if (request.GET.get('accept_trip')):
+        database.confirm_trip(pending_trip["trip_id"])
 
     if len(avg_rating) == 0:
-        response = render(request, "driver.html")
+        if (len(pending_trip)):
+            response = render(request, "driver.html", {
+                "pending":pending_trip, "ind_email":pending_trip['ind_email']})
+        else:
+            response = render(request, "driver.html")
         return response
 
+
+    stars = round(avg_rating[0]/100 * 5)
     if "update_successful" in request.GET:
         response = render(request, "driver.html", {"update_successful": 1, "stars": stars})
     else:
-        response = render(request, "driver.html", {"stars":stars})
+        if (len(pending_trip)):
+            response = render(request, "driver.html", {
+                              "stars": stars, "pending": pending_trip, "ind_email": pending_trip['ind_email']})
+        else:
+            response = render(request, "driver.html", {"stars":stars})
 
     set_cookie(response, cookies["session_id"])
     return response
@@ -304,6 +319,8 @@ def make_industry_info_dict(data):
 
 def make_trip_info_dict(data):
     d = {}
+    if (not data):
+        return {}
     d["trip_id"] = data[0]
     d["completed"] = data[1]
     d["driver_email"] = data[2]
