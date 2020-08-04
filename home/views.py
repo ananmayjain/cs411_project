@@ -280,7 +280,13 @@ def find_drivers(request):
 
         driver_list = {}
         for i in range(len(results)):
-            driver_list[i] = make_driver_info_dict(results[i])
+            temp = make_driver_info_dict(results[i])
+            success, driver_data = database.get_driver_info(temp)
+            driver_details = make_driver_info_dict(driver_data)
+            avg_rating = database.get_avg_driver_rating(driver_details)
+            stars = round(avg_rating[0]/100 * 5, 2) if len(avg_rating)!=0 else 0
+            temp["stars"] = stars
+            driver_list[i] = temp
 
         response = render(request, "table.html", {"driver_list": driver_list})
         set_cookie(response, cookies["session_id"])
