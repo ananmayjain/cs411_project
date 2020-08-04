@@ -378,12 +378,12 @@ def get_all_driver_trips(data):
 def get_all_industry_trips(data):
     with connection.cursor() as cursor:
         '''
-        SELECT trip_id, completed, driver_email, rating_from_driver, rating_from_industry
-        FROM Ind_Info i join Trips t on i.emailid = t.ind_email
-        WHERE i.emailid = %s
+        SELECT *
+        FROM Trips
+        WHERE ind_email = %s
         '''
         cursor.execute(
-            "SELECT * FROM Trips WHERE ind_email = %s"
+            "SELECT * FROM Trips WHERE ind_email = %s",
             [data["emailid"]]
         )
         rows = cursor.fetchall()

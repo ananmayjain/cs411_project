@@ -10,5 +10,6 @@ urlpatterns = [
     path('delete_account', views.delete_account, name="delete_acc"),
     path('sign_out', views.sign_out, name="signing_out"),
     path('find_drivers', views.find_drivers, name="find_drivers"),
-    path('find_driver_past_rides', views.find_driver_past_rides, name="find_driver_past_rides")
+    path('find_driver_past_rides', views.find_driver_past_rides, name="find_driver_past_rides"),
+    path('find_industry_past_rides', views.find_industry_past_rides, name="find_industry_past_rides")
 ]

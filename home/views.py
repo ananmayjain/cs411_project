@@ -322,10 +322,8 @@ def find_driver_past_rides(request):
         success, driver_data = database.get_driver_info(user_data)
         driver_details = make_driver_info_dict(driver_data)
         results = database.get_all_driver_trips(driver_details)
-        print(driver_details)
-        print(results)
+        
         if len(results) == 0:
-            print("hello sir")
             response = render(request, "driver_past_rides.html", {"no_trips": 1})
             set_cookie(response, cookies["session_id"])
             return response
@@ -335,5 +333,36 @@ def find_driver_past_rides(request):
             trip_list[i] = make_trip_info_dict(results[i])
 
         response = render(request, "driver_past_rides.html", {"trip_list": trip_list})
+        set_cookie(response, cookies["session_id"])
+        return response
+
+def find_industry_past_rides(request):
+    cookies = request.COOKIES
+    if "session_id" not in cookies:
+        return redirect("/?session_timeout=1")
+
+    success, data = database.mod_active_session(cookies["session_id"])
+
+    if not success:
+        return redirect("/?session_timeout=1")
+
+    if request.method == "GET":
+        user_data = make_user_session_dict(data)
+        success, industry_data = database.get_industry_info(user_data)
+        industry_details = make_industry_info_dict(industry_data)
+        results = database.get_all_industry_trips(industry_details)
+        
+        if len(results) == 0:
+            response = render(
+                request, "ind_past_rides.html", {"no_trips": 1})
+            set_cookie(response, cookies["session_id"])
+            return response
+
+        trip_list = {}
+        for i in range(len(results)):
+            trip_list[i] = make_trip_info_dict(results[i])
+
+        response = render(request, "ind_past_rides.html",
+                          {"trip_list": trip_list})
         set_cookie(response, cookies["session_id"])
         return response
