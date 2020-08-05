@@ -10,7 +10,7 @@ import hashlib
 domain_name = "localhost"
 
 def add_random_data(request):
-    data_inserter.add_data(5)
+    data_inserter.add_data(50)
 
 def login_page(request):
 

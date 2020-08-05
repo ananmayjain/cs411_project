@@ -88,7 +88,8 @@ def sendClientData(client_num):
 
         with thread_condition:
 
-            thread_condition.wait()
+            if queue.empty():
+                thread_condition.wait()
             # System has exited
             if kill_threads.is_set():
                 print("Quiting Thread " + str(client_num))
