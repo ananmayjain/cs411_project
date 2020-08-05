@@ -30,12 +30,25 @@
         window.location.replace("sign_out");
       }
     }
+
+    function accept_pending_trip() {
+        if (confirm("Do you want to confirm trip from {{ind_email}}")) {
+          window.location.replace("driverhome?accept_trip=1")
+        }
+      }
     </script>
 
     <link rel="stylesheet"  href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" />
     <link rel="stylesheet" href="/static/css/all.min.css" />
     <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/static/css/templatemo-style.css" />
+    <!-- Font Awesome Icon Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+      .checked {
+        color: orange;
+      }
+    </style>
   </head>
   <body>
     <div class="container-fluid">
@@ -74,7 +87,11 @@
                   </li>
                   <li class="nav-item">
                     <div class="tm-nav-link-highlight"></div>
-                    <a class="nav-link" href="gallery.html">Set Ride Availability</a>
+                    <a class="nav-link" href="find_driver_past_rides">My Rides</a>
+                  </li>
+                  <li class="nav-item">
+                    <div class="tm-nav-link-highlight"></div>
+                    <a class="nav-link" onclick="accept_pending_trip()">Get Trip</a>
                   </li>
                   <li class="nav-item">
                     <div class="tm-nav-link-highlight"></div>
@@ -90,6 +107,13 @@
           </div>
         </div>
       </div>
+
+      {% if stars %}
+      <span>Your Rating:</span>
+      {% for i in "x"|rjust:stars %}
+      <span class="fa fa-star checked"></span>
+      {% endfor %}
+      {% endif %}
 
       <div class="row tm-welcome-row">
         <div class="col-12 tm-page-cols-container">

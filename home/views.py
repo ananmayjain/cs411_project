@@ -25,10 +25,42 @@ def driver_home(request):
         print("Mod active session failed in driver_home")
         return redirect("/?session_timeout=1")
 
+    user_data = make_user_session_dict(data)
+    success, driver_data = database.get_driver_info(user_data)
+    driver_details = make_driver_info_dict(driver_data)
+    avg_rating = database.get_avg_driver_rating(driver_details)
+
+
+    pending_trip = database.find_pending_trips(driver_details)
+    pending_trip = make_trip_info_dict(pending_trip)
+
+    if (request.GET.get('accept_trip')):
+        database.confirm_trip(pending_trip["trip_id"])
+
+    if len(avg_rating) == 0:
+        if (len(pending_trip)):
+            response = render(request, "driver.html", {
+                "pending":pending_trip, "ind_email":pending_trip['ind_email']})
+        else:
+            response = render(request, "driver.html")
+        return response
+
+
+    stars = 0
+    try:
+        if avg_rating != None and avg_rating[0] != None:
+            stars = round(avg_rating[0]/100 * 5)
+    except:
+        pass
+        
     if "update_successful" in request.GET:
-        response = render(request, "driver.html", {"update_successful": 1})
+        response = render(request, "driver.html", {"update_successful": 1, "stars": stars})
     else:
-        response = render(request, "driver.html")
+        if (len(pending_trip)):
+            response = render(request, "driver.html", {
+                              "stars": stars, "pending": pending_trip, "ind_email": pending_trip['ind_email']})
+        else:
+            response = render(request, "driver.html", {"stars":stars})
 
     set_cookie(response, cookies["session_id"])
     return response
@@ -166,11 +198,38 @@ def industry_home(request):
     success, data = database.mod_active_session(cookies["session_id"])
     if not success:
         return redirect("/?session_timeout=1")
+    user_data = make_user_session_dict(data)
+    success, industry_data = database.get_industry_info(user_data)
+    industry_details = make_industry_info_dict(industry_data)
+    avg_rating = database.get_avg_ind_rating(industry_details)
+
+    args = get_args(request)
+    # we will use key start_loc for driver email
+    # this is because I could not compeltely figure out the js form
+    try:
+        if len(args) != 0:
+            guy = {}
+            guy["driver_email"] = args["start_loc"]
+            guy["ind_email"] = user_data["emailid"]
+            database.create_trip(guy)
+    except:
+        pass
+
+    if avg_rating == None or len(avg_rating) == 0:
+        response = render(request, "industry.html")
+        return response
+
+    stars = 0
+    try:
+        if avg_rating != None and avg_rating[0] != None:
+            stars = round(avg_rating[0]/100 * 5)
+    except:
+        pass
 
     if "update_successful" in request.GET:
-        response = render(request, "industry.html", {"update_successful": 1})
+        response = render(request, "industry.html", {"update_successful": 1, "stars": stars})
     else:
-        response = render(request, "industry.html")
+        response = render(request, "industry.html", {"stars": stars})
 
     set_cookie(response, cookies["session_id"])
     return response
@@ -206,14 +265,14 @@ def modify_industry_info(request):
                 set_cookie(response, cookies["session_id"])
                 return response
 
-        args["phone_num"] = get_digits(args["phone_num"])
+        # args["phone_num"] = get_digits(args["phone_num"])
 
-        if len(args["phone_num"]) != 10:
-            print("Phone Number not 10 digits")
-            industry_details["invalid_data"] = 1
-            response = render(request, "info_form_industry.html", industry_details)
-            set_cookie(response, cookies["session_id"])
-            return response
+        # if len(args["phone_num"]) != 10:
+        #     print("Phone Number not 10 digits")
+        #     industry_details["invalid_data"] = 1
+        #     response = render(request, "info_form_industry.html", industry_details)
+        #     set_cookie(response, cookies["session_id"])
+        #     return response
 
         if database.update_industry_info(args):
             response = redirect("/home/industryhome?update_successful=1")
@@ -262,7 +321,13 @@ def find_drivers(request):
 
         driver_list = {}
         for i in range(len(results)):
-            driver_list[i] = make_driver_info_dict(results[i])
+            temp = make_driver_info_dict(results[i])
+            success, driver_data = database.get_driver_info(temp)
+            driver_details = make_driver_info_dict(driver_data)
+            avg_rating = database.get_avg_driver_rating(driver_details)
+            stars = round(avg_rating[0]/100 * 5, 2) if len(avg_rating)!=0 else 0
+            temp["stars"] = stars
+            driver_list[i] = temp
 
         response = render(request, "table.html", {"driver_list": driver_list})
         set_cookie(response, cookies["session_id"])
@@ -275,5 +340,84 @@ def make_industry_info_dict(data):
     d["fname"] = data[1]
     d["lname"] = data[2]
     d["ind_name"] = data[3]
-    d["phone_num"] = data[4]
     return d
+
+def make_trip_info_dict(data):
+    d = {}
+    if (not data):
+        return {}
+    d["trip_id"] = data[0]
+    d["completed"] = data[1]
+    d["driver_email"] = data[2]
+    d["ind_email"] = data[3]
+    d["rating_from_driver"] = data[4]
+    d["rating_from_industry"] = data[5]
+    d["comments_from_driver"] = data[6]
+    d["comments_from_industry"] = data[7]
+    d["status"] = "Completed" if d["completed"] else "Ongoing"
+    #print("Look at me", d)
+    return d
+
+def find_driver_past_rides(request):
+    cookies = request.COOKIES
+    if "session_id" not in cookies:
+        return redirect("/?session_timeout=1")
+
+    success, data = database.mod_active_session(cookies["session_id"])
+
+    if not success:
+        return redirect("/?session_timeout=1")
+
+
+    if request.method == "GET":
+        user_data = make_user_session_dict(data)
+        success, driver_data = database.get_driver_info(user_data)
+        driver_details = make_driver_info_dict(driver_data)
+        results = database.get_all_driver_trips(driver_details)
+
+        if len(results) == 0:
+            response = render(request, "driver_past_rides.html", {"no_trips": 1})
+            set_cookie(response, cookies["session_id"])
+            return response
+
+        trip_list = {}
+        for i in range(len(results)):
+            trip_list[i] = make_trip_info_dict(results[i])
+
+        response = render(request, "driver_past_rides.html", {"trip_list": trip_list})
+        set_cookie(response, cookies["session_id"])
+        return response
+
+def find_industry_past_rides(request):
+    cookies = request.COOKIES
+    if "session_id" not in cookies:
+        return redirect("/?session_timeout=1")
+
+    success, data = database.mod_active_session(cookies["session_id"])
+
+    if not success:
+        return redirect("/?session_timeout=1")
+
+    if request.method == "GET":
+        user_data = make_user_session_dict(data)
+        success, industry_data = database.get_industry_info(user_data)
+        industry_details = make_industry_info_dict(industry_data)
+        results = database.get_all_industry_trips(industry_details)
+
+        if len(results) == 0:
+            response = render(
+                request, "ind_past_rides.html", {"no_trips": 1})
+            set_cookie(response, cookies["session_id"])
+            return response
+
+        trip_list = {}
+        for i in range(len(results)):
+            trip_list[i] = make_trip_info_dict(results[i])
+
+        response = render(request, "ind_past_rides.html",
+                          {"trip_list": trip_list})
+        set_cookie(response, cookies["session_id"])
+        return response
+
+def book_driver_form(request):
+    return render(request, 'book_driver_form.html')

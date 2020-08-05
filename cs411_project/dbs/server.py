@@ -96,7 +96,7 @@ def sendClientData(client_num):
 
             # If Connection not yet established, try to connect again
             # On success proceed, on failure continue and try again next time
-            if sock == None:
+            if client_socks[client_num] == None:
                 test_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 try:
                     test_sock.connect((client_ips[client_num], client_ports[client_num]))
@@ -143,6 +143,7 @@ def getClientNum(addr):
 def receive_one_msg(connection, addr):
     global kill_threads
     global client_receive_conditions
+    global client_socks
 
     client_num = 0
     receive_condition = client_receive_conditions[client_num]
@@ -164,6 +165,7 @@ def receive_one_msg(connection, addr):
 
         except:
             print("Connection with " + str(addr) + " failed")
+            client_socks[client_num] = None
             connection.close()
             return
 
