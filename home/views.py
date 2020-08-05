@@ -374,6 +374,33 @@ def find_driver_past_rides(request):
         set_cookie(response, cookies["session_id"])
         return response
 
+    else:
+        user_data = make_user_session_dict(data)
+        success, driver_data = database.get_driver_info(user_data)
+        driver_details = make_driver_info_dict(driver_data)
+
+        data = request.POST.copy()
+        trip_id = data.get('trip_id')
+        rating_from_driver = data.get('rating_from_driver')
+        database.make_driver_rating(
+            trip_id, rating_from_driver, driver_details['emailid'])
+
+        results = database.get_all_driver_trips(driver_details)
+
+        if len(results) == 0:
+            response = render(
+                request, "driver_past_rides.html", {"no_trips": 1})
+            set_cookie(response, cookies["session_id"])
+            return response
+
+        trip_list = {}
+        for i in range(len(results)):
+            trip_list[i] = make_trip_info_dict(results[i])
+        response = render(request, "driver_past_rides.html",
+                          {"trip_list": trip_list})
+        set_cookie(response, cookies["session_id"])
+        return response
+
 
 @csrf_exempt
 def find_industry_past_rides(request):
