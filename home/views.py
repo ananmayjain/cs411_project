@@ -342,6 +342,8 @@ def make_trip_info_dict(data):
     #print("Look at me", d)
     return d
 
+
+@csrf_exempt
 def find_driver_past_rides(request):
     cookies = request.COOKIES
     if "session_id" not in cookies:
@@ -372,6 +374,8 @@ def find_driver_past_rides(request):
         set_cookie(response, cookies["session_id"])
         return response
 
+
+@csrf_exempt
 def find_industry_past_rides(request):
     cookies = request.COOKIES
     if "session_id" not in cookies:
@@ -402,6 +406,33 @@ def find_industry_past_rides(request):
                           {"trip_list": trip_list})
         set_cookie(response, cookies["session_id"])
         return response
+    else:
+        user_data = make_user_session_dict(data)
+        success, industry_data = database.get_industry_info(user_data)
+        industry_details = make_industry_info_dict(industry_data)
 
+        data = request.POST.copy()
+        trip_id = data.get('trip_id')
+        rating_from_industry= data.get('rating_from_industry')
+        database.make_ind_rating(trip_id, rating_from_industry, industry_details['emailid'])
+
+        results = database.get_all_industry_trips(industry_details)
+
+        if len(results) == 0:
+            response = render(
+                request, "ind_past_rides.html", {"no_trips": 1})
+            set_cookie(response, cookies["session_id"])
+            return response
+
+        trip_list = {}
+        for i in range(len(results)):
+            trip_list[i] = make_trip_info_dict(results[i])
+        response = render(request, "ind_past_rides.html",
+                          {"trip_list": trip_list})
+        set_cookie(response, cookies["session_id"])
+        return response
+
+
+@csrf_exempt
 def book_driver_form(request):
     return render(request, 'book_driver_form.html')
