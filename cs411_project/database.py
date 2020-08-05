@@ -487,3 +487,19 @@ def confirm_trip(trip_id):
             "UPDATE Trips SET completed=1 WHERE trip_id=%s",
             [trip_id]
         )
+
+
+def make_ind_rating(trip_id, rating_from_industry, ind_email):
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "UPDATE Trips SET rating_from_industry=%s WHERE trip_id=%s AND ind_email=%s",
+            [rating_from_industry, trip_id, ind_email]
+        )
+
+
+def make_driver_rating(trip_id, rating_from_driver, driver_email):
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "UPDATE Trips SET rating_from_driver=%s WHERE trip_id=%s AND driver_email=%s",
+            [rating_from_driver, trip_id, driver_email]
+        )
